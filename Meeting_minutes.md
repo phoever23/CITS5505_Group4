@@ -14,6 +14,9 @@
 **Action Items**
 - Ming will create a github repository, upload the basic workflow and meeting minutes
 - Gayathri will edit later if there's any modification to make
+- (Added By Gayathri)
+- We will brainstroming on design archtecture and rough work will be done before the next meeting
+- Inform the other two members to obatin the emails to share the git hub repository
 
 **Next Meeting**
 - Next week
