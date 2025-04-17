@@ -5,7 +5,7 @@ An budget application that can track expense (user upload) and put them into dif
 ## Workflow
  1. **Clone the Repository**
 ```bash
-git clone git@github.com:phoever23/CITS5505_Group.git
+git clone git@github.com:phoever23/CITS5505_Group4.git
 ```
  2. **Synchronize with the Main Branch**  
 Switch to the main branch and ensure your local copy is up-to-date
