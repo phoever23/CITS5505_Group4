@@ -105,8 +105,16 @@ Follow these steps in your terminal or command prompt:
     ```
     
     This installs libraries like Flask into your activated virtual environment.
-    
 
+### Running the Application
+To run the Flask application, first make sure your virtual environment is activated (Step 5 in Development Environment Setup). Then, navigate to the root of the project directory in your terminal and execute one of the following commands:
+```bash
+python app.py
+# or
+python3 app.py
+```
+This will start the Flask development server. You should see output in your terminal indicating that the server is running, usually with a URL (like http://127.0.0.1:5000/) where you can access the application in your web browser.
+    
 ### Deactivating the Virtual Environment
 
 When you are done working on the project, exit the virtual environment:
