@@ -2,6 +2,79 @@
 ## Project Description
 An budget application that can track expense (user upload) and put them into different categories, create dashboard or other charts to demonstrate the historical data, and predict future income/expense.
 
+## Development Environment Setup
+
+This section guides you through setting up your local machine to work on the project. We will use a virtual environment (`venv`) to manage project dependencies.
+
+### Prerequisites
+
+Before you start, make sure you have the following installed on your computer:
+
+1.  **Python 3:** Download from [python.org](https://www.python.org/downloads/). Ensure you have Python 3.x.
+    * Check your version in your terminal/command prompt:
+        ```bash
+        python --version
+        # or sometimes
+        python3 --version
+        ```
+2.  **Git:** Download from [git-scm.com](https://git-scm.com/downloads).
+    * Check your version:
+        ```bash
+        git --version
+        ```
+
+### Setup Steps
+
+Follow these steps in your terminal or command prompt:
+
+1.  **Clone the Repository:**
+    If you haven't already, clone the project repository.
+    ```bash
+    git clone git@github.com:phoever23/CITS5505_Group4.git
+    ```
+
+2.  **Navigate into the Project Directory:**
+    Change your current directory to the cloned repository folder.
+    ```bash
+    cd CITS5505_Group4
+    ```
+
+3.  **Create a Virtual Environment:**
+    Create a virtual environment named `.venv` inside the project directory.
+    ```bash
+    python -m venv .venv
+    # or if the above doesn't work, try:
+    python3 -m venv .venv
+    ```
+
+4.  **Activate the Virtual Environment:**
+    This step activates the environment, ensuring you use the correct Python and `pip`.
+
+    **For macOS and Linux:**
+    ```bash
+    source .venv/bin/activate
+    ```
+
+    **For Windows (Command Prompt or PowerShell):**
+    ```bash
+    .\.venv\Scripts\activate
+    ```
+    After activation, you should see `(.venv)` at the start of your terminal prompt.
+
+5.  **Install Dependencies:**
+    With the virtual environment activated, install project dependencies from `requirements.txt`.
+    ```bash
+    pip install -r requirements.txt
+    ```
+    This installs libraries like Flask into your virtual environment.
+
+### Deactivating the Virtual Environment
+
+When you are done working on the project, exit the virtual environment:
+```bash
+deactivate
+```
+
 ## Workflow
  1. **Clone the Repository**
 ```bash
