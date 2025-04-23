@@ -85,13 +85,13 @@ Follow these steps in your terminal or command prompt:
     **For macOS and Linux:**
     
     ```bash
-    source .venv/bin/activate    
+    source venv/bin/activate    
     ```
     
     **For Windows (Command Prompt or PowerShell):**
     
     ```
-    .\.venv\Scripts\activate    
+    .\venv\Scripts\activate
     ```
     
     After activation, you should see `(.venv)` at the start of your terminal prompt.
