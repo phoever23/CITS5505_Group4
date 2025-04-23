@@ -1,3 +1,4 @@
+/* Existing styles from index.html */
 * {
     margin: 0;
     padding: 0;
@@ -6,9 +7,13 @@
 }
 
 body {
+    /* Default body styles for pages like index.html */
     background-color: #f5f5f5;
+    /* Light grey background */
     color: #333;
     line-height: 1.6;
+    padding: 0;
+    /* Ensure no default body padding */
 }
 
 .container {
@@ -20,23 +25,30 @@ body {
 
 header {
     background-color: #1a1a2e;
+    /* Darker background like the image */
     color: white;
     padding: 10px 0;
+    /* Reduced padding slightly */
 }
 
 nav {
     display: flex;
     justify-content: space-between;
+    /* Keeps logo left, auth buttons right */
     align-items: center;
     flex-wrap: wrap;
+    /* Allows wrapping on smaller screens */
     gap: 20px;
+    /* Added gap between flex items */
 }
 
 .logo {
     font-size: 28px;
     font-weight: bold;
     margin-right: auto;
+    /* Pushes primary-nav and auth-buttons to the right */
     flex-shrink: 0;
+    /* Prevent logo from shrinking */
 }
 
 .logo span {
@@ -47,15 +59,22 @@ nav {
     display: flex;
     align-items: center;
     gap: 10px;
+    /* Space between the four navigation links */
     flex-wrap: wrap;
+    /* Allow primary nav links to wrap */
     justify-content: center;
+    /* Center primary nav links when wrapped */
+    /* margin: 0 auto; /* Uncomment this and remove margin-right on logo if you want to truly center the primary nav block */
 }
 
 .auth-buttons {
+    /* Renamed from nav-buttons */
     display: flex;
     align-items: center;
     gap: 20px;
+    /* Space between login and signup buttons */
     flex-shrink: 0;
+    /* Prevent auth buttons from shrinking */
 }
 
 
@@ -63,40 +82,58 @@ nav {
 .primary-nav .nav-link {
     text-decoration: none;
     color: #bdc3c7;
+    /* Light grey text color */
     padding: 8px 15px;
+    /* Padding for pill shape */
     border-radius: 30px;
+    /* Creates the pill shape */
     transition: all 0.3s ease;
     background-color: transparent;
+    /* Default transparent background */
     border: none;
+    /* Remove default border */
     display: flex;
+    /* Align icon and text */
     align-items: center;
     gap: 5px;
+    /* Space between icon and text */
     white-space: nowrap;
+    /* Prevent text wrapping within buttons */
     font-size: 16px;
+    /* Adjust font size if needed */
 }
 
 .primary-nav .nav-link:hover {
     background-color: rgba(255, 255, 255, 0.1);
+    /* Subtle background on hover */
     color: white;
+    /* White text on hover */
     transform: none;
+    /* Remove translateY effect */
     box-shadow: none;
+    /* Remove box-shadow effect */
     opacity: 1;
 }
 
 /* Styling for the active navigation link (like 'Home' in the image) */
 .primary-nav .nav-link.active {
     background-color: #34495e;
+    /* Darker background for active state */
     color: white;
+    /* White text for active state */
     font-weight: bold;
+    /* Make active link text bold */
 }
 
-/* Styling for Login/Sign Up buttons */
+
+/* Styling for Login/Sign Up buttons - keeping existing styles but adjust margin */
 .auth-buttons a {
     text-decoration: none;
     padding: 8px 16px;
     border-radius: 4px;
     transition: all 0.3s ease;
     white-space: nowrap;
+    /* Prevent text wrapping within buttons */
 }
 
 .login-btn {
@@ -106,6 +143,7 @@ nav {
 }
 
 .signup-btn {
+    /* Keeping the original signup style - adjust if you want it to match the primary nav look */
     background-color: #3498db;
     border: 1px solid #3498db;
     color: white;
@@ -246,25 +284,184 @@ footer {
     text-align: center;
 }
 
-@media (max-width: 768px) {
-    .chart-box {
-        width: 100%;
-    }
 
+/* --- Dashboard Specific Styles --- */
+
+/* Apply light grey background and dark text for the dashboard page */
+body.dashboard-page {
+    background-color: #f5f5f5;
+    /* Same as index body background */
+    color: #333;
+    /* Dark text */
+    padding: 0;
+    /* Remove body padding */
+    /* Layout properties moved to wrapper */
+}
+
+/* Style for the main content wrapper on the dashboard page */
+.dashboard-content-wrapper {
+    padding: 20px 0;
+    /* Add vertical padding */
+    min-height: calc(100vh - 70px);
+    /* Example: 100vh minus approx header height */
+    display: flex;
+    /* Use flex to potentially center content or manage children */
+    flex-direction: column;
+    align-items: center;
+    /* Center content horizontally */
+}
+
+/* Apply dashboard-specific h1 style (adjusted for light background) */
+body.dashboard-page h1 {
+    text-align: center;
+    color: #2c3e50;
+    /* Dark color for heading */
+    margin-bottom: 20px;
+    font-size: 28px;
+    margin-top: 0;
+}
+
+/* Style for the file input (adjusted for light background) */
+body.dashboard-page input[type="file"] {
+    display: block;
+    margin: 0 auto 30px auto;
+    padding: 10px 15px;
+    background-color: #eee;
+    /* Lighter background for input */
+    color: #333;
+    /* Dark text */
+    border: 1px solid #ccc;
+    /* Lighter border */
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Dashboard grid layout for 2x2 on larger screens */
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    /* Two columns, equal width */
+    grid-template-rows: repeat(2, auto);
+    /* Two rows, height auto */
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+    /* Optional: max width for the grid itself */
+    margin: 0 auto;
+    /* Center the grid within its container */
+}
+
+.card {
+    background: white;
+    /* White background for cards */
+    padding: 16px;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* Lighter shadow */
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    /* Center card content */
+}
+
+.card canvas {
+    width: 100% !important;
+    height: auto !important;
+    /* Let height adjust automatically */
+    max-height: 250px;
+    /* Max height to help maintain aspect ratio */
+}
+
+/* Adjust style for the h2 inside the top expenses card */
+.card h2 {
+    color: #2c3e50;
+    /* Dark color for heading */
+    font-size: 20px;
+    margin-bottom: 10px;
+    /* Add margin below title */
+}
+
+#topExpenses {
+    list-style: none;
+    margin: 0;
+    padding: 0 10px;
+    color: #333;
+    /* Dark text for the list */
+    font-size: 15px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+#topExpenses li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    /* Lighter separator */
+}
+
+#topExpenses li:last-child {
+    border-bottom: none;
+}
+
+
+/* Media Queries */
+
+@media (max-width: 768px) {
+
+    /* Header responsiveness */
     nav {
         flex-direction: column;
+        /* Stack items vertically on small screens */
         gap: 10px;
     }
 
     .logo {
         margin-right: 0;
+        /* Remove auto margin */
         margin-bottom: 10px;
+        /* Add space below logo */
     }
 
     .primary-nav,
     .auth-buttons {
         width: 100%;
+        /* Take full width */
         justify-content: center;
+        /* Center buttons */
         gap: 10px;
+        /* Adjust gap for smaller screens */
+    }
+
+    /* Dashboard grid responsiveness */
+    .dashboard {
+        grid-template-columns: 1fr;
+        /* Stack columns on smaller screens */
+        grid-template-rows: auto;
+        /* Rows adjust height automatically */
+    }
+
+    .card {
+        /* Adjust card padding or height for smaller screens if needed */
+    }
+}
+
+@media (max-width: 480px) {
+
+    /* Further adjustments for very small screens */
+    .primary-nav .nav-link {
+        padding: 6px 10px;
+        /* Smaller padding for buttons */
+        font-size: 14px;
+    }
+
+    .auth-buttons a {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+
+    body.dashboard-page h1 {
+        font-size: 24px;
     }
 }
