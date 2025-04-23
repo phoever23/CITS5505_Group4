@@ -61,7 +61,7 @@ Follow these steps in your terminal or command prompt:
     Open the `.gitignore` file in a text editor and add the following line to ignore the virtual environment directory:
     
     ```bash
-    .venv/    
+    venv/    
     ```
     
     Save the file. The crucial line here is `.venv/`, which tells Git to ignore the virtual environment directory we will create in the next step.
@@ -71,9 +71,9 @@ Follow these steps in your terminal or command prompt:
     Now, create a virtual environment named .venv inside the project directory. Git will ignore this directory because of the .gitignore file you just created.
     
     ```bash
-    python -m venv .venv
+    python -m venv venv
     # or if the above doesn't work, try:
-    python3 -m venv .venv    
+    python3 -m venv venv    
     ```
     
     This command creates the `.venv` folder.
