@@ -64,11 +64,11 @@ Follow these steps in your terminal or command prompt:
     venv/    
     ```
     
-    Save the file. The crucial line here is `.venv/`, which tells Git to ignore the virtual environment directory we will create in the next step.
+    Save the file. The crucial line here is `venv/`, which tells Git to ignore the virtual environment directory we will create in the next step.
     
 4.  Create a Virtual Environment:
     
-    Now, create a virtual environment named .venv inside the project directory. Git will ignore this directory because of the .gitignore file you just created.
+    Now, create a virtual environment named venv inside the project directory. Git will ignore this directory because of the .gitignore file you just created.
     
     ```bash
     python -m venv venv
@@ -76,7 +76,7 @@ Follow these steps in your terminal or command prompt:
     python3 -m venv venv    
     ```
     
-    This command creates the `.venv` folder.
+    This command creates the `venv` folder.
     
 5.  Activate the Virtual Environment:
     
@@ -94,7 +94,7 @@ Follow these steps in your terminal or command prompt:
     .\venv\Scripts\activate
     ```
     
-    After activation, you should see `(.venv)` at the start of your terminal prompt.
+    After activation, you should see `(venv)` at the start of your terminal prompt.
     
 6.  Install Dependencies:
     
