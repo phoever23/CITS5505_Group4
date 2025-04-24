@@ -11,31 +11,14 @@
     </head>
 
     <body class="dashboard-page">
-        <header>
-            <div class="container">
-                <nav>
-                    <div class="logo">Budget<span>Track</span></div>
-                    <div class="primary-nav">
-                        <a href="/" class="nav-link">
-                            Home
-                        </a>
-                        <a href="/upload" class="nav-link">
-                            Upload
-                        </a>
-                        <a href="/dashboard" class="nav-link active">
-                            Dashboard
-                        </a>
-                        <a href="/share" class="nav-link">
-                            Share
-                        </a>
-                    </div>
-                    <div class="auth-buttons">
-                        <a href="/login.html" class="login-btn">Login</a>
-                        <a href="/signup.html" class="signup-btn">Sign Up</a>
-                    </div>
-                </nav>
-            </div>
-        </header>
+        <div id="header-placeholder"></div>
+    <script>
+      fetch("/header")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("header-placeholder").innerHTML = data;
+        });
+    </script>
 
         <main class="dashboard-content-wrapper">
             <div class="container">

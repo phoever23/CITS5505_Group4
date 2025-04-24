@@ -6,6 +6,10 @@ app = Flask(__name__)
 def home():
     return render_template('index.html')
 
+@app.route('/header')
+def header():
+    return render_template('components/header.html')
+
 @app.route('/upload')
 def upload_page():
     return render_template('upload.html')
