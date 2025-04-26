@@ -1,130 +1,138 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BudgetTrack - Smart Expense Tracking</title>
+    <link rel="stylesheet" href="/static/css/main.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>BudgetTrack - Smart Expense Tracking</title>
-        <link rel="stylesheet" href="/static/css/main.css">
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    </head>
+  <body>
+    <div id="header-placeholder"></div>
+    <script>
+      fetch("/header")
+        .then((response) => response.text())
+        .then((data) => {
+          document.getElementById("header-placeholder").innerHTML = data;
+        });
+    </script>
 
-    <body>
-        <header>
-            <div class="container">
-                <nav>
-                    <div class="logo">Budget<span>Track</span></div>
-                    <div class="primary-nav">
-                        <a href="/" class="nav-link active">
-                            Home
-                        </a>
-                        <a href="/upload" class="nav-link">
-                            Upload
-                        </a>
-                        <a href="/dashboard" class="nav-link">
-                            Dashboard
-                        </a>
-                        <a href="/share" class="nav-link">
-                            Share
-                        </a>
-                    </div>
-                    <div class="auth-buttons">
-                        <a href="#" class="login-btn">Login</a>
-                        <a href="#" class="signup-btn">Sign Up</a>
-                    </div>
-                </nav>
+    <section class="hero">
+      <div class="container">
+        <h1>Smart Budget Management</h1>
+        <p>
+          Track expenses, analyze spending patterns, and plan for a better
+          financial future with our intelligent budget tracking application.
+        </p>
+        <a href="#" class="cta-btn">Get Started</a>
+        <a
+          href="#features"
+          class="cta-btn"
+          style="
+            background-color: transparent;
+            color: #3498db;
+            border: 1px solid #3498db;
+          "
+          >Learn More</a
+        >
+
+        <div class="dashboard-preview">
+          <h2 style="margin-bottom: 20px">Interactive Dashboard Preview</h2>
+          <div class="charts-container">
+            <div class="chart-box">
+              <div class="chart-title">Monthly Expenses by Category</div>
+              <canvas id="expenseChart"></canvas>
             </div>
-        </header>
-
-        <section class="hero">
-            <div class="container">
-                <h1>Smart Budget Management</h1>
-                <p>Track expenses, analyze spending patterns, and plan for a better financial future with our
-                    intelligent budget tracking application.</p>
-                <a href="#" class="cta-btn">Get Started</a>
-                <a href="#features" class="cta-btn"
-                    style="background-color: transparent; color: #3498db; border: 1px solid #3498db;">Learn More</a>
-
-                <div class="dashboard-preview">
-                    <h2 style="margin-bottom: 20px;">Interactive Dashboard Preview</h2>
-                    <div class="charts-container">
-                        <div class="chart-box">
-                            <div class="chart-title">Monthly Expenses by Category</div>
-                            <canvas id="expenseChart"></canvas>
-                        </div>
-                        <div class="chart-box">
-                            <div class="chart-title">Income vs Expenses (Last 6 Months)</div>
-                            <canvas id="incomeExpenseChart"></canvas>
-                        </div>
-                        <div class="chart-box">
-                            <div class="chart-title">Spending Trends</div>
-                            <canvas id="trendChart"></canvas>
-                        </div>
-                        <div class="chart-box">
-                            <div class="chart-title">Expense Forecast (Next 3 Months)</div>
-                            <canvas id="forecastChart"></canvas>
-                        </div>
-                    </div>
-                </div>
+            <div class="chart-box">
+              <div class="chart-title">Income vs Expenses (Last 6 Months)</div>
+              <canvas id="incomeExpenseChart"></canvas>
             </div>
-        </section>
-
-        <section class="features" id="features">
-            <div class="container">
-                <div class="section-title">
-                    <h2>Key Features</h2>
-                    <p>Discover how BudgetTrack helps you take control of your finances</p>
-                </div>
-
-                <div class="feature-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">📊</div>
-                        <h3>Expense Tracking</h3>
-                        <p>Easily upload and categorize your expenses. Get a clear picture of where your money is going.
-                        </p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">📈</div>
-                        <h3>Visual Analytics</h3>
-                        <p>Comprehensive dashboards and charts to visualize your spending patterns and financial
-                            history.</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">🔮</div>
-                        <h3>Predictive Analysis</h3>
-                        <p>Advanced algorithms to forecast your future income and expenses based on historical data.</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">🏷️</div>
-                        <h3>Custom Categories</h3>
-                        <p>Create and manage your own expense categories to match your unique financial situation.</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">📱</div>
-                        <h3>Responsive Design</h3>
-                        <p>Access your budget information from any device, anywhere, anytime.</p>
-                    </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon">🔐</div>
-                        <h3>Secure Data</h3>
-                        <p>Your financial information is protected with the highest security standards.</p>
-                    </div>
-                </div>
+            <div class="chart-box">
+              <div class="chart-title">Spending Trends</div>
+              <canvas id="trendChart"></canvas>
             </div>
-        </section>
-
-        <footer>
-            <div class="container">
-                <p>&copy; 2025 BudgetTrack. All rights reserved.</p>
+            <div class="chart-box">
+              <div class="chart-title">Expense Forecast (Next 3 Months)</div>
+              <canvas id="forecastChart"></canvas>
             </div>
-        </footer>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        <script src="/static/js/main.js"></script>
-    </body>
+    <section class="features" id="features">
+      <div class="container">
+        <div class="section-title">
+          <h2>Key Features</h2>
+          <p>
+            Discover how BudgetTrack helps you take control of your finances
+          </p>
+        </div>
 
+        <div class="feature-grid">
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Expense Tracking</h3>
+            <p>
+              Easily upload and categorize your expenses. Get a clear picture of
+              where your money is going.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📈</div>
+            <h3>Visual Analytics</h3>
+            <p>
+              Comprehensive dashboards and charts to visualize your spending
+              patterns and financial history.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🔮</div>
+            <h3>Predictive Analysis</h3>
+            <p>
+              Advanced algorithms to forecast your future income and expenses
+              based on historical data.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🏷️</div>
+            <h3>Custom Categories</h3>
+            <p>
+              Create and manage your own expense categories to match your unique
+              financial situation.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Responsive Design</h3>
+            <p>
+              Access your budget information from any device, anywhere, anytime.
+            </p>
+          </div>
+
+          <div class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <h3>Secure Data</h3>
+            <p>
+              Your financial information is protected with the highest security
+              standards.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
+        <p>&copy; 2025 BudgetTrack. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+  </body>
 </html>
