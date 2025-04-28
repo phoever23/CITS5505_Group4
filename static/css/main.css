@@ -162,6 +162,12 @@ nav {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
+.cta-btn--outline {
+    background-color: transparent;
+    color: #3498db;
+    border: 1px solid #3498db;
+}
+
 .features {
     padding: 60px 0;
     background-color: white;
@@ -263,7 +269,8 @@ body.dashboard-page {
 }
 
 /* Style for the main content wrapper on the dashboard page */
-.dashboard-content-wrapper, .upload-content-wrapper {
+.dashboard-content-wrapper,
+.upload-content-wrapper {
     padding: 20px 0;
     min-height: calc(100vh - 70px);
     display: flex;
@@ -445,6 +452,7 @@ body.upload-page h1 {
     font-size: 28px;
     margin-top: 0;
 }
+
 .subtitle {
     text-align: center;
     color: #7f8c8d;
@@ -500,10 +508,11 @@ body.upload-page h1 {
     border: 1px dashed #ccc;
     border-radius: 8px;
     background-color: #f9f9f9;
-    cursor: pointer;   
+    cursor: pointer;
 }
 
-.upload-btn, .submit-btn {
+.upload-btn,
+.submit-btn {
     margin-top: 10px;
     display: inline-block;
     background-color: #3498db;
@@ -519,7 +528,8 @@ body.upload-page h1 {
     width: 100%;
 }
 
-.upload-btn:hover, .submit-btn:hover {
+.upload-btn:hover,
+.submit-btn:hover {
     background-color: #2980b9;
     transform: translateY(-2px);
 }
@@ -564,7 +574,7 @@ body.upload-page h1 {
     .upload-options {
         grid-template-columns: 1fr;
     }
-    
+
     .upload-card {
         padding: 20px;
     }

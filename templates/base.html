@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Common CSS -->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+        <!-- Page-specific title -->
+        <title>{% block title %}BudgetTrack{% endblock %}</title>
+        <!-- Block for page-specific head elements (e.g., CSS) -->
+        {% block head %}{% endblock %}
+    </head>
+
+    <body class="{% block body_class %}{% endblock %}">
+
+        <!-- Common Header -->
+        <header>
+            <div class="container">
+                <nav>
+                    <div class="logo">Budget<span>Track</span></div>
+                    <div class="primary-nav">
+                        {# Use request.path and url_for to determine active link #}
+                        <a href="{{ url_for('home') }}"
+                            class="nav-link {% if request.path == url_for('home') %}active{% endif %}">
+                            Home
+                        </a>
+                        <a href="{{ url_for('upload_page') }}"
+                            class="nav-link {% if request.path == url_for('upload_page') %}active{% endif %}">
+                            Upload
+                        </a>
+                        <a href="{{ url_for('dashboard_page') }}"
+                            class="nav-link {% if request.path == url_for('dashboard_page') %}active{% endif %}">
+                            Dashboard
+                        </a>
+                        <a href="{{ url_for('share_page') }}"
+                            class="nav-link {% if request.path == url_for('share_page') %}active{% endif %}">
+                            Share
+                        </a>
+                    </div>
+                    <div class="auth-buttons">
+                        {# Add actual auth links later #}
+                        <a href="#" class="login-btn">Login</a>
+                        <a href="#" class="signup-btn">Sign Up</a>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main content block for child templates -->
+        <main class="{% block main_class %}content-wrapper{% endblock %}">
+            <div class="container">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+
+        <!-- Common Footer -->
+        <footer>
+            <div class="container">
+                <p>&copy; 2025 BudgetTrack. All rights reserved.</p>
+            </div>
+        </footer>
+
+        <!-- Common JS (if any) -->
+        <!-- Block for page-specific scripts -->
+        {% block scripts %}{% endblock %}
+    </body>
+
+</html>

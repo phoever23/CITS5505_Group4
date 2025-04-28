@@ -1,50 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>BudgetTrack - Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
-    <link rel="stylesheet" href="/static/css/main.css" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  </head>
+{% extends 'base.html' %}
 
-  <body class="dashboard-page">
-    <div id="header-placeholder"></div>
-    <script>
-      fetch("/header")
-        .then((response) => response.text())
-        .then((data) => {
-          document.getElementById("header-placeholder").innerHTML = data;
-        });
-    </script>
+{% block title %}BudgetTrack - Dashboard{% endblock %}
 
-    <main class="dashboard-content-wrapper">
-      <div class="container">
-        <h1>Budget Visualisation Dashboard</h1>
-        <input type="file" id="csvFile" accept=".csv" />
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
 
-        <div class="dashboard">
-          <div class="card">
-            <canvas id="lineChart"></canvas>
-          </div>
-          <div class="card">
-            <canvas id="pieChart"></canvas>
-          </div>
-          <div class="card">
-            <canvas id="barChart"></canvas>
-          </div>
-          <div class="card">
-            <h2 style="color: #facc15; font-size: 20px">Top 5 Expenses</h2>
-            <ul id="topExpenses"></ul>
-          </div>
-        </div>
+{% block body_class %}dashboard-page{% endblock %}
+
+{% block content %}
+<div class="dashboard-content-wrapper">
+  <div class="container">
+    <h1>Budget Visualisation Dashboard</h1>
+    <input type="file" id="csvFile" accept=".csv" />
+
+    <div class="dashboard">
+      <div class="card">
+        <canvas id="lineChart"></canvas>
       </div>
-    </main>
+      <div class="card">
+        <canvas id="pieChart"></canvas>
+      </div>
+      <div class="card">
+        <canvas id="barChart"></canvas>
+      </div>
+      <div class="card">
+        <h2 style="color: #facc15; font-size: 20px">Top 5 Expenses</h2>
+        <ul id="topExpenses"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
 
-    <script src="/static/js/dashboard.js"></script>
-  </body>
-</html>
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
