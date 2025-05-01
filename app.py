@@ -1,6 +1,15 @@
 from flask import Flask, render_template, url_for, request
+from config import Config
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 app = Flask(__name__)
+app.config.from_object(Config)
+
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+from models import User, Expense
 
 @app.route('/')
 def home():
