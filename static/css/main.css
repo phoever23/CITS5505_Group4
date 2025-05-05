@@ -1,9 +1,9 @@
-/* Reset and Base Styles */
+/* styles for index.html */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
@@ -20,35 +20,6 @@ body {
     padding: 0 20px;
 }
 
-/* Typography */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    color: #2c3e50;
-    margin-bottom: 0.5em;
-    font-weight: 600;
-}
-
-p {
-    margin-bottom: 1em;
-}
-
-a {
-    color: #3498db;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-a:hover {
-    color: #2980b9;
-}
-
-/* Layout Components */
-
-/* Header */
 header {
     background-color: #1a1a2e;
     color: white;
@@ -89,7 +60,8 @@ nav {
     flex-shrink: 0;
 }
 
-/* Navigation Links */
+
+/* Styling for the main navigation links (Home, Upload, Dashboard, Share) */
 .primary-nav .nav-link {
     text-decoration: none;
     color: #bdc3c7;
@@ -108,15 +80,23 @@ nav {
 .primary-nav .nav-link:hover {
     background-color: rgba(255, 255, 255, 0.1);
     color: white;
+    transform: none;
+    box-shadow: none;
+    opacity: 1;
 }
 
+/* Styling for the active navigation link (like 'Home' in the image) */
 .primary-nav .nav-link.active {
     background-color: #34495e;
+    /* Darker background for active state */
     color: white;
+    /* White text for active state */
     font-weight: bold;
+    /* Make active link text bold */
 }
 
-/* Auth Buttons */
+
+/* Styling for Login/Sign Up buttons */
 .auth-buttons a {
     text-decoration: none;
     padding: 8px 16px;
@@ -143,7 +123,25 @@ nav {
     transform: translateY(-2px);
 }
 
-/* Common Button Styles */
+
+.hero {
+    padding: 80px 0;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+.hero p {
+    font-size: 20px;
+    color: #7f8c8d;
+    max-width: 800px;
+    margin: 0 auto 40px;
+}
+
 .cta-btn {
     display: inline-block;
     background-color: #3498db;
@@ -156,7 +154,6 @@ nav {
     font-weight: bold;
     transition: all 0.3s ease;
     margin: 0 10px;
-    cursor: pointer;
 }
 
 .cta-btn:hover {
@@ -171,16 +168,377 @@ nav {
     border: 1px solid #3498db;
 }
 
-/* Card Component */
+.features {
+    padding: 60px 0;
+    background-color: white;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.section-title h2 {
+    font-size: 36px;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.section-title p {
+    color: #7f8c8d;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+
+.feature-card {
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+    font-size: 40px;
+    margin-bottom: 20px;
+    color: #3498db;
+}
+
+.feature-card h3 {
+    font-size: 22px;
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+footer {
+    background-color: #2c3e50;
+    color: white;
+    padding: 30px 0;
+    text-align: center;
+}
+
+.dashboard-preview {
+    margin-top: 40px;
+    text-align: center;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.charts-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.chart-box {
+    width: 48%;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.chart-title {
+    font-size: 18px;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+
+/* --- Dashboard Specific Styles --- */
+
+body.dashboard-page {
+    background-color: #f5f5f5;
+    color: #333;
+    padding: 0;
+}
+
+/* Style for the main content wrapper on the dashboard page */
+.dashboard-content-wrapper,
+.upload-content-wrapper {
+    padding: 20px 0;
+    min-height: calc(100vh - 70px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+body.dashboard-page h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 28px;
+    margin-top: 0;
+}
+
+/* Style for the file input (adjusted for light background) */
+body.dashboard-page input[type="file"] {
+    display: block;
+    max-width: 300px;
+    margin: 0 auto 30px auto;
+    padding: 10px 15px;
+    background-color: #eee;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Dashboard grid layout for 2x2 on larger screens */
+.dashboard {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 20px;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
 .card {
     background: white;
     padding: 16px;
     border-radius: 16px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Form Elements */
+.card canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 250px;
+}
+
+.card h2 {
+    color: #2c3e50;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+#topExpenses {
+    list-style: none;
+    margin: 0;
+    padding: 0 10px;
+    color: #333;
+    font-size: 15px;
+    overflow-y: auto;
+    width: 100%;
+}
+
+#topExpenses li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+#topExpenses li:last-child {
+    border-bottom: none;
+}
+
+/* --- Share view Specific Styles --- */
+
+/* Style for select and text input fields within the form */
+.share-page .data-selection-form select,
+.share-page .data-selection-form input[type="text"] {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #555;
+    background-color: #fff;
+    box-sizing: border-box;
+
+    .data-selection-form select:focus,
+    .data-selection-form input[type="text"]:focus,
+    body.dashboard-page input[type="file"]:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    }
+
+    /Style for multi-select */ .data-selection-form select[multiple] {
+        min-height: 100px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #555;
+    }
+
+}
+
+.share-page .dashboard-content-wrapper h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+
+    nav {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .logo {
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    .primary-nav,
+    .auth-buttons {
+        width: 100%;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    /* Dashboard grid responsiveness */
+    .dashboard {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    /* Further adjustments for very small screens */
+    .primary-nav .nav-link {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+
+    .auth-buttons a {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+
+    body.dashboard-page h1 {
+        font-size: 24px;
+    }
+}
+
+body.upload-page h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 28px;
+    margin-top: 0;
+}
+
+.subtitle {
+    text-align: center;
+    color: #7f8c8d;
+    margin-bottom: 40px;
+    font-size: 16px;
+}
+
+.upload-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.upload-card {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.upload-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f8ff;
+    border-radius: 50%;
+    color: #3498db;
+}
+
+.upload-card h2 {
+    color: #2c3e50;
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.upload-card p {
+    color: #7f8c8d;
+    margin-bottom: 20px;
+    font-size: 15px;
+}
+
+.file-input {
+    display: block;
+    width: 100%;
+    margin: 20px 0;
+    padding: 10px;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
+
+.upload-btn,
+.submit-btn {
+    margin-top: 10px;
+    display: inline-block;
+    background-color: #3498db;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 30px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    width: 100%;
+}
+
+.upload-btn:hover,
+.submit-btn:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+.entry-form {
+    margin-top: 20px;
+    text-align: left;
+}
+
 .form-group {
     margin-bottom: 15px;
 }
@@ -211,53 +569,13 @@ nav {
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
 }
 
-/* Footer */
-footer {
-    background-color: #2c3e50;
-    color: white;
-    padding: 30px 0;
-    text-align: center;
-}
-
-/* Content Wrapper */
-.content-wrapper {
-    padding: 20px 0;
-    min-height: calc(100vh - 140px);
-    /* Adjust based on header/footer height */
-}
-
-/* Media Queries */
+/* Responsive adjustments */
 @media (max-width: 768px) {
-    nav {
-        flex-direction: column;
-        gap: 10px;
+    .upload-options {
+        grid-template-columns: 1fr;
     }
 
-    .logo {
-        margin-right: 0;
-        margin-bottom: 10px;
-    }
-
-    .primary-nav,
-    .auth-buttons {
-        width: 100%;
-        justify-content: center;
-        gap: 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    .primary-nav .nav-link {
-        padding: 6px 10px;
-        font-size: 14px;
-    }
-
-    .auth-buttons a {
-        padding: 6px 10px;
-        font-size: 14px;
-    }
-
-    h1 {
-        font-size: 24px;
+    .upload-card {
+        padding: 20px;
     }
 }

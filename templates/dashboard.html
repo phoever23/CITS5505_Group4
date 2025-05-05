@@ -1,37 +1,79 @@
 {% extends 'base.html' %}
 
-{% block page_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-{% endblock %}
-
 {% block title %}BudgetTrack - Dashboard{% endblock %}
 
 {% block head %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 {% endblock %}
 
 {% block body_class %}dashboard-page{% endblock %}
 
 {% block content %}
-<div class="dashboard-content-wrapper">
+<div class="dashboard-content-wrapper py-6">
   <div class="container">
-    <h1>Budget Visualisation Dashboard</h1>
-    <input type="file" id="csvFile" accept=".csv" />
 
-    <div class="dashboard">
-      <div class="card">
+    <h1 class="text-2xl font-bold mb-4">Budget Visualisation Dashboard</h1>
+
+    <!-- Average Daily Spend -->
+    <div class="mb-4 p-3 bg-yellow-100 rounded">
+      <h2 class="font-semibold">Your Average Daily Spend: <span id="dailySpend">$0</span></h2>
+    </div>
+
+    <!-- Top Controls -->
+    <div class="flex flex-wrap items-center gap-4 mb-6">
+      <!-- Removed CSV File Input -->
+
+      <!-- Date Filter Buttons -->
+      <div class="flex gap-2">
+        <button class="filter-btn bg-blue-500 text-white px-3 py-1 rounded" data-filter="weekly">Weekly</button>
+        <button class="filter-btn bg-blue-500 text-white px-3 py-1 rounded" data-filter="monthly">Monthly</button>
+        <button class="filter-btn bg-blue-500 text-white px-3 py-1 rounded" data-filter="yearly">Yearly</button>
+      </div>
+
+      <!-- Currency Selector -->
+      <select id="currencySelector" class="border p-2 rounded">
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+        <option value="GBP">GBP</option>
+        <option value="AUD">AUD</option>
+        <option value="CAD">CAD</option>
+      </select>
+
+      <!-- Export Buttons -->
+      <div class="flex gap-2">
+        <button id="exportPNG" class="bg-green-500 text-white px-3 py-1 rounded">Download PNG</button>
+        <button id="exportPDF" class="bg-red-500 text-white px-3 py-1 rounded">Download PDF</button>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- Trend Line -->
+      <div class="card p-4 bg-white rounded-lg shadow">
+        <h2 class="text-lg font-semibold mb-2">Expenses Trend Over Time</h2>
         <canvas id="lineChart"></canvas>
       </div>
-      <div class="card">
+
+      <!-- Pie Chart -->
+      <div class="card p-4 bg-white rounded-lg shadow">
+        <h2 class="text-lg font-semibold mb-2">Expense Distribution by Category</h2>
         <canvas id="pieChart"></canvas>
       </div>
-      <div class="card">
+
+      <!-- Bar Chart -->
+      <div class="card p-4 bg-white rounded-lg shadow">
+        <h2 class="text-lg font-semibold mb-2">Expenses by Sub-Category</h2>
         <canvas id="barChart"></canvas>
       </div>
-      <div class="card">
-        <h2 style="color: #facc15; font-size: 20px">Top 5 Expenses</h2>
-        <ul id="topExpenses"></ul>
+
+      <!-- Top 5 Expenses -->
+      <div class="card p-4 bg-white rounded-lg shadow col-span-1 md:col-span-2">
+        <h2 class="text-lg font-semibold mb-2 text-yellow-500">Top 5 Expenses</h2>
+        <ul id="topExpenses" class="list-disc pl-5 text-gray-700"></ul>
       </div>
+
     </div>
   </div>
 </div>
@@ -39,4 +81,13 @@
 
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script>
+  // ✅ Auto-fetch data when page loads
+  fetch('/api/expenses')
+    .then(response => response.json())
+    .then(data => {
+      originalData = data;
+      drawCharts(originalData);
+    });
+</script>
 {% endblock %}
