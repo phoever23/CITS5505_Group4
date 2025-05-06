@@ -1,9 +1,11 @@
-from flask import Flask, render_template, url_for, request, jsonify
+from flask import Flask, render_template, url_for, request, jsonify, flash
 from config import Config
 from models import db, User, Expense
 from flask_migrate import Migrate
 import random
 from datetime import datetime
+import io
+import csv
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -15,8 +17,35 @@ migrate = Migrate(app, db)
 def home():
     return render_template('index.html')
 
-@app.route('/upload')
+@app.route('/upload', methods=['GET', 'POST'])
 def upload_page():
+    if request.method == 'POST':
+        formData = request.get_json()
+        print(formData)
+        if all(attr in formData for attr in ('date', 'category', 'subcategory', 'amount', 'currency')):
+            try:
+                date = datetime.strptime(formData['date'], '%Y-%m-%d')
+                category = formData['category']
+                sub_category = formData['subcategory']
+                amount = float(formData['amount'])
+                currency = formData['currency'].upper()
+                user_id = 991 # Hardcoded for now replace with current user ID from session
+
+                new_expense = Expense(
+                    date=date,
+                    category=category,
+                    sub_category=sub_category,
+                    amount=amount,
+                    currency=currency,
+                    user_id=user_id
+                )
+                db.session.add(new_expense)
+                db.session.commit()
+                flash('Manual entry added successfully.', 'success')
+                return "Success", 200
+            except Exception as e:
+                flash(f"Error saving manual entry: {e}", 'danger')
+        return "Success", 200
     return render_template('upload.html')
 
 @app.route('/dashboard')
@@ -49,7 +78,9 @@ def seed_data():
     user = User.query.filter_by(username='demo_user').first()
     if not user:
         user = User(username='demo_user', password_hash='dummyhash')
+        dummy_user = User(id='991', username='Niranjan', password_hash='sdlkjf439053kjn')
         db.session.add(user)
+        db.session.add(dummy_user)
         db.session.commit()
 
     categories = {

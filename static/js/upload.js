@@ -6,6 +6,22 @@ const categorySubcategories = {
     others: ["Transportation", "Healthcare", "Entertainment", "Travel", "Gym"]
 };
 
+async function sendData(formData) {
+    console.log('called') 
+    try {
+        const response = await fetch("/upload", {
+            method:"POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body:JSON.stringify(formData),
+        });
+        console.log(await response);
+    } catch (e) {
+        console.error(e);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const categorySelect = document.getElementById('entryCategory');
     const subcategorySelect = document.getElementById('entrySubcategory');
@@ -34,8 +50,9 @@ document.addEventListener('DOMContentLoaded', function() {
             amount: document.getElementById('entryAmount').value,
             currency: document.getElementById('entryCurrency').value
         };
+        sendData(formData);
         console.log('Form submitted:', formData);
-        alert('Expense added successfully!');
+        //alert('Expense added successfully!');
         this.reset();
     });
 });
