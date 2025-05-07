@@ -261,3 +261,8 @@ footer {
         font-size: 24px;
     }
 }
+
+.user-welcome {
+    color: white;
+    margin-right: 15px;
+}

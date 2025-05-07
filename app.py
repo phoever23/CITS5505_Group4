@@ -1,9 +1,10 @@
-from flask import Flask, render_template, url_for, request, jsonify
+from flask import Flask, render_template, url_for, request, jsonify, redirect, flash, session
 from config import Config
 from models import db, User, Expense
 from flask_migrate import Migrate
 import random
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -14,6 +15,53 @@ migrate = Migrate(app, db)
 @app.route('/')
 def home():
     return render_template('index.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        user = User.query.filter_by(username=username).first()
+        
+        if user and check_password_hash(user.password_hash, password):
+            session['username'] = username
+            flash('Login successful!', 'success')
+            return redirect(url_for('dashboard_page'))
+        else:
+            flash('Invalid username or password', 'danger')
+    
+    return render_template('login.html')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        
+        existing_user = User.query.filter_by(username=username).first()
+        
+        if existing_user:
+            flash('Username already exists', 'danger')
+        elif password != confirm_password:
+            flash('Passwords do not match', 'danger')
+        else:
+            hashed_password = generate_password_hash(password)
+            new_user = User(username=username, password_hash=hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Account created successfully! Please login.', 'success')
+            return redirect(url_for('login'))
+    
+    return render_template('signup.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()  # Clear the session
+    session.pop('_flashes', None)  # Clear existing flash messages
+    flash('You have been logged out', 'info')  # Set new logout message
+    return redirect(url_for('login'))
 
 @app.route('/upload')
 def upload_page():
@@ -27,7 +75,7 @@ def dashboard_page():
 def share_page():
     return render_template('share.html')
 
-# 2. API Route - fetch expense data as JSON
+# API Route - fetch expense data as JSON
 @app.route('/api/expenses')
 def api_expenses():
     expenses = Expense.query.all()
