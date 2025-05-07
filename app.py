@@ -1,9 +1,11 @@
-from flask import Flask, render_template, url_for, request, jsonify
+from flask import Flask, render_template, url_for, request, jsonify, flash
 from config import Config
 from models import db, User, Expense
 from flask_migrate import Migrate
 import random
 from datetime import datetime
+import io
+import csv
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -15,8 +17,91 @@ migrate = Migrate(app, db)
 def home():
     return render_template('index.html')
 
-@app.route('/upload')
+@app.route('/upload', methods=['GET', 'POST'])
 def upload_page():
+    if request.method == 'POST':
+        if request.content_type == 'application/json':
+            formData = request.get_json()
+            print(formData)
+            if all(attr in formData for attr in ('date', 'category', 'subcategory', 'amount', 'currency')):
+                try:
+                    date = datetime.strptime(formData['date'], '%Y-%m-%d')
+                    category = formData['category']
+                    sub_category = formData['subcategory']
+                    amount = float(formData['amount'])
+                    currency = formData['currency'].upper()
+                    user_id = 991 # Hardcoded for now replace with current user ID from session
+
+                    new_expense = Expense(
+                        date=date,
+                        category=category,
+                        sub_category=sub_category,
+                        amount=amount,
+                        currency=currency,
+                        user_id=user_id
+                    )
+                    db.session.add(new_expense)
+                    db.session.commit()
+                    return jsonify({
+                        'status': 'success',
+                        'message':'Manual entry added successfully'
+                    }), 200
+                except ValueError as e:
+                    return jsonify({
+                        'status':'error',
+                        'message': f'Invalid data format: {str(e)}'
+                    }), 400
+                except Exception as e:
+                    db.session.rollback()
+                    return jsonify({
+                        'status':'error',
+                        'message':f'Error saving manual entry: {str(e)}'
+                    }), 500
+        elif 'file' in request.files:
+            file = request.files['file']
+            if file.filename.endswith('.csv'):
+                try:
+                    stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
+                    reader = csv.DictReader(stream)
+                    expenses = []
+                    for row in reader:
+                        try:
+                            expense  = Expense(
+                                date = datetime.strptime(row['Date'], '%Y-%m-%d'),
+                                category=row['Category'],
+                                sub_category=row['Sub-category'],
+                                amount=float(row['Amount']),
+                                currency=row['Currency'].upper(),
+                                user_id=991 # Replace with session-based user ID
+                            )
+                            expenses.append(expense)
+                        except Exception as row_error:
+                            return jsonify({
+                                'status':'error',
+                                'message':f'Invalid row data: {str(row_error)}'
+                            }), 400
+                    db.session.bulk_save_objects(expenses)
+                    db.session.commit()
+                    return jsonify({
+                        'status': 'success',
+                        'message':'CSV uploaded successfully'
+                    }), 200
+                except Exception as e:
+                    db.session.rollback()
+                    return jsonify({
+                        'status':'success',
+                        'message':'CSV upload failed'
+                    }), 500
+            else:
+                return jsonify({
+                    'status':'error',
+                    'message':'Only CSV files are supported'
+                }), 400
+        else:
+            return jsonify({
+                'status':'error',
+                'message':'Unsupported content type'
+            }), 415
     return render_template('upload.html')
 
 @app.route('/dashboard')
@@ -49,7 +134,9 @@ def seed_data():
     user = User.query.filter_by(username='demo_user').first()
     if not user:
         user = User(username='demo_user', password_hash='dummyhash')
+        dummy_user = User(id='991', username='Niranjan', password_hash='sdlkjf439053kjn')
         db.session.add(user)
+        db.session.add(dummy_user)
         db.session.commit()
 
     categories = {
