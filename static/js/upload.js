@@ -29,6 +29,28 @@ async function sendData(formData) {
     }
 }
 
+async function sendFile(formData) {
+    try {
+        const response = await fetch("/upload", {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.json();
+        console.log(result);
+        if(response.ok) {
+            showNotification('CSV file uploaded successfully', 'success');
+        }
+        else {
+            const errorMessage = result.message || 'CSV upload failed';
+            showNotification('Network error while uploading CSV', 'error');
+        }
+    }
+    catch (e) {
+        console.error(e);
+    }
+}
+
 function showNotification(message, type) {
     Toastify({
         text: message,
@@ -41,6 +63,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const categorySelect = document.getElementById('entryCategory');
     const subcategorySelect = document.getElementById('entrySubcategory');
     const manualEntryForm = document.getElementById('manualEntryForm');
+    const fileEntryForm = document.getElementById('fileEntryForm')
     const csvUploadInput = document.getElementById('csvUpload');
     const processCsvBtn = document.querySelector('.upload-btn');
     categorySelect.addEventListener('change', function() {
@@ -66,8 +89,15 @@ document.addEventListener('DOMContentLoaded', function() {
             currency: document.getElementById('entryCurrency').value
         };
         sendData(formData);
-        console.log('Form submitted:', formData);
-        //alert('Expense added successfully!');
         this.reset();
     });
+
+    fileEntryForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const file  = csvUploadInput.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        sendFile(formData)
+        this.reset();
+    })
 });
