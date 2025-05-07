@@ -68,6 +68,14 @@ nav {
     font-weight: bold;
     margin-right: auto;
     flex-shrink: 0;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.logo:hover {
+    color: white;
+    opacity: 0.9;
 }
 
 .logo span {

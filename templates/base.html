@@ -21,7 +21,7 @@
         <header>
             <div class="container">
                 <nav>
-                    <div class="logo">Budget<span>Track</span></div>
+                    <a href="{{ url_for('home') }}" class="logo">Budget<span>Track</span></a>
                     <div class="primary-nav">
                         {% if 'username' in session %}
                         <a href="{{ url_for('home') }}"

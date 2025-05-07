@@ -78,7 +78,20 @@ def upload_page():
                     sub_category = formData['subcategory']
                     amount = float(formData['amount'])
                     currency = formData['currency'].upper()
-                    user_id = 991 # Hardcoded for now replace with current user ID from session
+                    
+                    # Get current user from session
+                    if 'username' not in session:
+                        return jsonify({
+                            'status': 'error',
+                            'message': 'User not logged in'
+                        }), 401
+                        
+                    user = User.query.filter_by(username=session['username']).first()
+                    if not user:
+                        return jsonify({
+                            'status': 'error',
+                            'message': 'User not found'
+                        }), 404
 
                     new_expense = Expense(
                         date=date,
@@ -86,7 +99,7 @@ def upload_page():
                         sub_category=sub_category,
                         amount=amount,
                         currency=currency,
-                        user_id=user_id
+                        user_id=user.id
                     )
                     db.session.add(new_expense)
                     db.session.commit()
@@ -109,18 +122,32 @@ def upload_page():
             file = request.files['file']
             if file.filename.endswith('.csv'):
                 try:
+                    # Get current user from session
+                    if 'username' not in session:
+                        return jsonify({
+                            'status': 'error',
+                            'message': 'User not logged in'
+                        }), 401
+                        
+                    user = User.query.filter_by(username=session['username']).first()
+                    if not user:
+                        return jsonify({
+                            'status': 'error',
+                            'message': 'User not found'
+                        }), 404
+
                     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
                     reader = csv.DictReader(stream)
                     expenses = []
                     for row in reader:
                         try:
-                            expense  = Expense(
-                                date = datetime.strptime(row['Date'], '%Y-%m-%d'),
+                            expense = Expense(
+                                date=datetime.strptime(row['Date'], '%Y-%m-%d'),
                                 category=row['Category'],
                                 sub_category=row['Sub-category'],
                                 amount=float(row['Amount']),
                                 currency=row['Currency'].upper(),
-                                user_id=991 # Replace with session-based user ID
+                                user_id=user.id
                             )
                             expenses.append(expense)
                         except Exception as row_error:
@@ -137,7 +164,7 @@ def upload_page():
                 except Exception as e:
                     db.session.rollback()
                     return jsonify({
-                        'status':'success',
+                        'status':'error',
                         'message':'CSV upload failed'
                     }), 500
             else:
@@ -163,7 +190,23 @@ def share_page():
 # API Route - fetch expense data as JSON
 @app.route('/api/expenses')
 def api_expenses():
-    expenses = Expense.query.all()
+    # Check if user is logged in
+    if 'username' not in session:
+        return jsonify({
+            'status': 'error',
+            'message': 'User not logged in'
+        }), 401
+        
+    # Get current user
+    user = User.query.filter_by(username=session['username']).first()
+    if not user:
+        return jsonify({
+            'status': 'error',
+            'message': 'User not found'
+        }), 404
+
+    # Get expenses only for the current user
+    expenses = Expense.query.filter_by(user_id=user.id).all()
     result = []
     for exp in expenses:
         result.append({
