@@ -41,11 +41,21 @@ def upload_page():
                 )
                 db.session.add(new_expense)
                 db.session.commit()
-                flash('Manual entry added successfully.', 'success')
-                return "Success", 200
+                return jsonify({
+                    'status': 'success',
+                    'message':'Manual entry added successfully'
+                }), 200
+            except ValueError as e:
+                return jsonify({
+                    'status':'error',
+                    'message': f'Invalid data format: {str(e)}'
+                }), 400
             except Exception as e:
-                flash(f"Error saving manual entry: {e}", 'danger')
-        return "Success", 200
+                db.session.rollback()
+                return jsonify({
+                    'status':'error',
+                    'message':f'Error saving manual entry: {str(e)}'
+                }), 500
     return render_template('upload.html')
 
 @app.route('/dashboard')

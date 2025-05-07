@@ -7,7 +7,6 @@ const categorySubcategories = {
 };
 
 async function sendData(formData) {
-    console.log('called') 
     try {
         const response = await fetch("/upload", {
             method:"POST",
@@ -16,10 +15,26 @@ async function sendData(formData) {
             },
             body:JSON.stringify(formData),
         });
-        console.log(await response);
+        const result = await response.json();
+        if(response.ok) {
+            showNotification('Expenses added successfully', 'success');
+        }
+        else {
+            const errorMessage = result.message || 'Failed to add expense';
+            showNotification(errorMessage, 'error');
+        }
     } catch (e) {
         console.error(e);
+        showNotification('Network error occurred', 'error');
     }
+}
+
+function showNotification(message, type) {
+    Toastify({
+        text: message,
+        className: type,
+        duration: 3000
+    }).showToast();
 }
 
 document.addEventListener('DOMContentLoaded', function() {

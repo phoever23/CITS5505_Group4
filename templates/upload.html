@@ -2,6 +2,7 @@
 
 {% block page_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/upload.css') }}">
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 {% endblock %}
 
 {% block title %}BudgetTrack - Upload Expenses{% endblock %}
@@ -87,5 +88,6 @@
 {% endblock %}
 
 {% block scripts %}
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
 {% endblock %}

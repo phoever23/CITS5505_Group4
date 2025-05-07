@@ -8,6 +8,6 @@ __pycache__/
 # Database file
 app.db
 
-#Metada
+#Metadata
 .DS_Store
 templates/.DS_Store
