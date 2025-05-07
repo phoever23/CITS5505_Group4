@@ -21,9 +21,9 @@
         <header>
             <div class="container">
                 <nav>
-                    <div class="logo">Budget<span>Track</span></div>
+                    <a href="{{ url_for('home') }}" class="logo">Budget<span>Track</span></a>
                     <div class="primary-nav">
-                        {# Use request.path and url_for to determine active link #}
+                        {% if 'username' in session %}
                         <a href="{{ url_for('home') }}"
                             class="nav-link {% if request.path == url_for('home') %}active{% endif %}">
                             Home
@@ -40,11 +40,16 @@
                             class="nav-link {% if request.path == url_for('share_page') %}active{% endif %}">
                             Share
                         </a>
+                        {% endif %}
                     </div>
                     <div class="auth-buttons">
-                        {# Add actual auth links later #}
-                        <a href="#" class="login-btn">Login</a>
-                        <a href="#" class="signup-btn">Sign Up</a>
+                        {% if 'username' in session %}
+                        <span class="user-welcome">Welcome, {{ session['username'] }}</span>
+                        <a href="{{ url_for('logout') }}" class="login-btn">Logout</a>
+                        {% else %}
+                        <a href="{{ url_for('login') }}" class="login-btn">Login</a>
+                        <a href="{{ url_for('signup') }}" class="signup-btn">Sign Up</a>
+                        {% endif %}
                     </div>
                 </nav>
             </div>

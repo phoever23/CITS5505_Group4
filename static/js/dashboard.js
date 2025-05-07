@@ -6,11 +6,11 @@ let currentCurrency = "USD";
 const budgetTarget = 2000;
 
 const allowedCategories = {
-  Housing: ["rent", "mortgage"],
-  Food: ["grocery", "restaurants"],
-  Shopping: ["clothes", "electronics"],
-  Education: ["tuition", "printing"],
-  Others: ["gifts", "transport", "maintenance"],
+  Housing: ["Rent", "Mortgage", "Utilities", "Home Insurance", "Maintenance"],
+  Food: ["Groceries", "Restaurants", "Takeout", "Coffee Shops", "Alcohol"],
+  Shopping: ["Clothing", "Electronics", "Furniture", "Books", "Gifts"],
+  Education: ["Tuition", "Textbooks", "Supplies", "Printing", "Courses"],
+  Others: ["Transportation", "Healthcare", "Entertainment", "Travel", "Gym"],
 };
 
 const allowedCurrencies = ["AUD", "GBP", "USD", "CAD", "EUR"];

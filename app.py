@@ -1,9 +1,9 @@
-from flask import Flask, render_template, url_for, request, jsonify, flash
+from flask import Flask, render_template, url_for, request, jsonify, redirect, flash, session
 from config import Config
 from models import db, User, Expense
 from flask_migrate import Migrate
-import random
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 import io
 import csv
 
@@ -16,6 +16,53 @@ migrate = Migrate(app, db)
 @app.route('/')
 def home():
     return render_template('index.html')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        
+        user = User.query.filter_by(username=username).first()
+        
+        if user and check_password_hash(user.password_hash, password):
+            session['username'] = username
+            flash('Login successful!', 'success')
+            return redirect(url_for('dashboard_page'))
+        else:
+            flash('Invalid username or password', 'danger')
+    
+    return render_template('login.html')
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        
+        existing_user = User.query.filter_by(username=username).first()
+        
+        if existing_user:
+            flash('Username already exists', 'danger')
+        elif password != confirm_password:
+            flash('Passwords do not match', 'danger')
+        else:
+            hashed_password = generate_password_hash(password)
+            new_user = User(username=username, password_hash=hashed_password)
+            db.session.add(new_user)
+            db.session.commit()
+            flash('Account created successfully! Please login.', 'success')
+            return redirect(url_for('login'))
+    
+    return render_template('signup.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()  # Clear the session
+    session.pop('_flashes', None)  # Clear existing flash messages
+    flash('You have been logged out', 'info')  # Set new logout message
+    return redirect(url_for('login'))
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_page():
@@ -30,7 +77,20 @@ def upload_page():
                     sub_category = formData['subcategory']
                     amount = float(formData['amount'])
                     currency = formData['currency'].upper()
-                    user_id = 991 # Hardcoded for now replace with current user ID from session
+                    
+                    # Get current user from session
+                    if 'username' not in session:
+                        return jsonify({
+                            'status': 'error',
+                            'message': 'User not logged in'
+                        }), 401
+                        
+                    user = User.query.filter_by(username=session['username']).first()
+                    if not user:
+                        return jsonify({
+                            'status': 'error',
+                            'message': 'User not found'
+                        }), 404
 
                     new_expense = Expense(
                         date=date,
@@ -38,7 +98,7 @@ def upload_page():
                         sub_category=sub_category,
                         amount=amount,
                         currency=currency,
-                        user_id=user_id
+                        user_id=user.id
                     )
                     db.session.add(new_expense)
                     db.session.commit()
@@ -61,18 +121,32 @@ def upload_page():
             file = request.files['file']
             if file.filename.endswith('.csv'):
                 try:
+                    # Get current user from session
+                    if 'username' not in session:
+                        return jsonify({
+                            'status': 'error',
+                            'message': 'User not logged in'
+                        }), 401
+                        
+                    user = User.query.filter_by(username=session['username']).first()
+                    if not user:
+                        return jsonify({
+                            'status': 'error',
+                            'message': 'User not found'
+                        }), 404
+
                     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
                     reader = csv.DictReader(stream)
                     expenses = []
                     for row in reader:
                         try:
-                            expense  = Expense(
-                                date = datetime.strptime(row['Date'], '%Y-%m-%d'),
+                            expense = Expense(
+                                date=datetime.strptime(row['Date'], '%Y-%m-%d'),
                                 category=row['Category'],
                                 sub_category=row['Sub-category'],
                                 amount=float(row['Amount']),
                                 currency=row['Currency'].upper(),
-                                user_id=991 # Replace with session-based user ID
+                                user_id=user.id
                             )
                             expenses.append(expense)
                         except Exception as row_error:
@@ -89,7 +163,7 @@ def upload_page():
                 except Exception as e:
                     db.session.rollback()
                     return jsonify({
-                        'status':'success',
+                        'status':'error',
                         'message':'CSV upload failed'
                     }), 500
             else:
@@ -112,10 +186,26 @@ def dashboard_page():
 def share_page():
     return render_template('share.html')
 
-# 2. API Route - fetch expense data as JSON
+# API Route - fetch expense data as JSON
 @app.route('/api/expenses')
 def api_expenses():
-    expenses = Expense.query.all()
+    # Check if user is logged in
+    if 'username' not in session:
+        return jsonify({
+            'status': 'error',
+            'message': 'User not logged in'
+        }), 401
+        
+    # Get current user
+    user = User.query.filter_by(username=session['username']).first()
+    if not user:
+        return jsonify({
+            'status': 'error',
+            'message': 'User not found'
+        }), 404
+
+    # Get expenses only for the current user
+    expenses = Expense.query.filter_by(user_id=user.id).all()
     result = []
     for exp in expenses:
         result.append({
@@ -126,44 +216,6 @@ def api_expenses():
             'currency': exp.currency
         })
     return jsonify(result)
-
-
-# Optional: Simple route to seed dummy data directly from browser
-@app.route('/seed')
-def seed_data():
-    user = User.query.filter_by(username='demo_user').first()
-    if not user:
-        user = User(username='demo_user', password_hash='dummyhash')
-        dummy_user = User(id='991', username='Niranjan', password_hash='sdlkjf439053kjn')
-        db.session.add(user)
-        db.session.add(dummy_user)
-        db.session.commit()
-
-    categories = {
-        "Housing": ["rent", "mortgage"],
-        "Food": ["grocery", "restaurants"],
-        "Shopping": ["clothes", "electronics"],
-        "Education": ["tuition", "printing"],
-        "Others": ["gifts", "transport", "maintenance"]
-    }
-
-    currencies = ["AUD", "GBP", "USD", "CAD", "EUR"]
-
-    for _ in range(50):
-        cat = random.choice(list(categories.keys()))
-        sub = random.choice(categories[cat])
-        exp = Expense(
-            date=datetime.strptime(f"2024-{random.randint(1, 12):02d}-{random.randint(1, 28):02d}", '%Y-%m-%d'),
-            category=cat,
-            sub_category=sub,
-            amount=round(random.uniform(10, 500), 2),
-            currency=random.choice(currencies),
-            author=user
-        )
-        db.session.add(exp)
-
-    db.session.commit()
-    return 'Dummy data inserted! Go to /dashboard now.'
 
 if __name__ == '__main__':
     app.run(debug=True)
