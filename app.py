@@ -1,7 +1,9 @@
 from flask import Flask, render_template, url_for, request, jsonify, redirect, flash, session
 from config import Config
 from models import db, User, Expense
+from forms import LoginForm, SignupForm
 from flask_migrate import Migrate
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 import io
@@ -12,6 +14,13 @@ app.config.from_object(Config)
 
 db.init_app(app)
 migrate = Migrate(app, db)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+
+@login_manager.user_loader
+def load_user(id):
+    return User.query.get(int(id))
 
 @app.route('/')
 def home():
@@ -19,57 +28,53 @@ def home():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        
-        user = User.query.filter_by(username=username).first()
-        
-        if user and check_password_hash(user.password_hash, password):
-            session['username'] = username
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard_page'))
+    
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and check_password_hash(user.password_hash, form.password.data):
+            login_user(user)
             flash('Login successful!', 'success')
-            return redirect(url_for('dashboard_page'))
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('dashboard_page'))
         else:
             flash('Invalid username or password', 'danger')
     
-    return render_template('login.html')
+    return render_template('login.html', form=form)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        confirm_password = request.form['confirm_password']
-        
-        existing_user = User.query.filter_by(username=username).first()
-        
-        if existing_user:
-            flash('Username already exists', 'danger')
-        elif password != confirm_password:
-            flash('Passwords do not match', 'danger')
-        else:
-            hashed_password = generate_password_hash(password)
-            new_user = User(username=username, password_hash=hashed_password)
-            db.session.add(new_user)
-            db.session.commit()
-            flash('Account created successfully! Please login.', 'success')
-            return redirect(url_for('login'))
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard_page'))
     
-    return render_template('signup.html')
+    form = SignupForm()
+    if form.validate_on_submit():
+        hashed_password = generate_password_hash(form.password.data)
+        new_user = User(username=form.username.data, password_hash=hashed_password)
+        db.session.add(new_user)
+        db.session.commit()
+        flash('Account created successfully! Please login.', 'success')
+        return redirect(url_for('login'))
+    
+    return render_template('signup.html', form=form)
 
 @app.route('/logout')
+@login_required
 def logout():
-    session.clear()  # Clear the session
-    session.pop('_flashes', None)  # Clear existing flash messages
-    flash('You have been logged out', 'info')  # Set new logout message
+    logout_user()
+    # Clear any existing flash messages
+    session.pop('_flashes', None)
+    flash('You have been logged out', 'info')
     return redirect(url_for('login'))
 
 @app.route('/upload', methods=['GET', 'POST'])
+@login_required
 def upload_page():
     if request.method == 'POST':
         if request.content_type == 'application/json':
             formData = request.get_json()
-            print(formData)
             if all(attr in formData for attr in ('date', 'category', 'subcategory', 'amount', 'currency')):
                 try:
                     date = datetime.strptime(formData['date'], '%Y-%m-%d')
@@ -78,27 +83,13 @@ def upload_page():
                     amount = float(formData['amount'])
                     currency = formData['currency'].upper()
                     
-                    # Get current user from session
-                    if 'username' not in session:
-                        return jsonify({
-                            'status': 'error',
-                            'message': 'User not logged in'
-                        }), 401
-                        
-                    user = User.query.filter_by(username=session['username']).first()
-                    if not user:
-                        return jsonify({
-                            'status': 'error',
-                            'message': 'User not found'
-                        }), 404
-
                     new_expense = Expense(
                         date=date,
                         category=category,
                         sub_category=sub_category,
                         amount=amount,
                         currency=currency,
-                        user_id=user.id
+                        user_id=current_user.id
                     )
                     db.session.add(new_expense)
                     db.session.commit()
@@ -121,20 +112,6 @@ def upload_page():
             file = request.files['file']
             if file.filename.endswith('.csv'):
                 try:
-                    # Get current user from session
-                    if 'username' not in session:
-                        return jsonify({
-                            'status': 'error',
-                            'message': 'User not logged in'
-                        }), 401
-                        
-                    user = User.query.filter_by(username=session['username']).first()
-                    if not user:
-                        return jsonify({
-                            'status': 'error',
-                            'message': 'User not found'
-                        }), 404
-
                     stream = io.StringIO(file.stream.read().decode("UTF8"), newline=None)
                     reader = csv.DictReader(stream)
                     expenses = []
@@ -146,7 +123,7 @@ def upload_page():
                                 sub_category=row['Sub-category'],
                                 amount=float(row['Amount']),
                                 currency=row['Currency'].upper(),
-                                user_id=user.id
+                                user_id=current_user.id
                             )
                             expenses.append(expense)
                         except Exception as row_error:
@@ -179,6 +156,7 @@ def upload_page():
     return render_template('upload.html')
 
 @app.route('/dashboard')
+@login_required
 def dashboard_page():
     return render_template('dashboard.html')
 
@@ -188,24 +166,10 @@ def share_page():
 
 # API Route - fetch expense data as JSON
 @app.route('/api/expenses')
+@login_required
 def api_expenses():
-    # Check if user is logged in
-    if 'username' not in session:
-        return jsonify({
-            'status': 'error',
-            'message': 'User not logged in'
-        }), 401
-        
-    # Get current user
-    user = User.query.filter_by(username=session['username']).first()
-    if not user:
-        return jsonify({
-            'status': 'error',
-            'message': 'User not found'
-        }), 404
-
     # Get expenses only for the current user
-    expenses = Expense.query.filter_by(user_id=user.id).all()
+    expenses = Expense.query.filter_by(user_id=current_user.id).all()
     result = []
     for exp in expenses:
         result.append({

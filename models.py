@@ -1,12 +1,12 @@
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
 
 db = SQLAlchemy()
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True, nullable=False)
-    # Need a library like Werkzeug or passlib for hashing later.
     password_hash = db.Column(db.String(128))
     # Relationship: A user can have many expenses
     expenses = db.relationship('Expense', backref='author', lazy='dynamic')
