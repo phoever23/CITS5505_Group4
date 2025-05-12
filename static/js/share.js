@@ -1,13 +1,3 @@
-// Data type selection handler
-document.getElementById("dataType").addEventListener("change", function () {
-  const categorySection = document.getElementById("categorySection");
-  if (this.value === "summary") {
-    categorySection.style.display = "block";
-  } else {
-    categorySection.style.display = "none";
-  }
-});
-
 // Date range handler
 document.getElementById("dateRange").addEventListener("change", function () {
   const customDateSection = document.getElementById("customDateSection");
@@ -70,21 +60,15 @@ document.getElementById("shareWith").addEventListener("input", function () {
 
 // Share button handler
 document.getElementById("shareDataBtn").addEventListener("click", function () {
-  const dataType = document.getElementById("dataType").value;
   const dateRange = document.getElementById("dateRange").value;
   const startDate = document.getElementById("startDate").value;
   const endDate = document.getElementById("endDate").value;
-  const categories = Array.from(
-    document.getElementById("categoriesToShare").selectedOptions
-  ).map((opt) => opt.value);
   const shareWith = document.getElementById("shareWith").value;
 
   const shareData = {
-    dataType,
     dateRange,
     startDate: dateRange === "custom" ? startDate : null,
     endDate: dateRange === "custom" ? endDate : null,
-    categories: dataType === "summary" ? categories : [],
     shareWith,
   };
 
@@ -141,16 +125,6 @@ function formatDateRange(startDate, endDate) {
   }
 }
 
-// Function to format data type and categories
-function formatDataType(dataType, categories) {
-  if (dataType === "all") {
-    return "All Expenses";
-  } else {
-    const categoryList = categories ? JSON.parse(categories) : [];
-    return `Summary by Category: ${categoryList.join(", ")}`;
-  }
-}
-
 // Function to load shared data with pagination
 function loadSharedData(page = 1) {
   currentPage = page;
@@ -179,13 +153,6 @@ function loadSharedData(page = 1) {
                           sharedData.shared_at
                         }</p>
                         <div class="shared-data-details mt-2">
-                            <p class="text-sm">
-                                <span class="font-medium">Data Type:</span> 
-                                ${formatDataType(
-                                  sharedData.data_type,
-                                  sharedData.categories
-                                )}
-                            </p>
                             <p class="text-sm">
                                 <span class="font-medium">Date Range:</span> 
                                 ${formatDateRange(

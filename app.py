@@ -207,7 +207,7 @@ def share_data():
     try:
         data = request.get_json()
         
-        if not all(k in data for k in ['dataType', 'shareWith']):
+        if not all(k in data for k in ['shareWith']):
             return jsonify({'success': False, 'message': 'Missing required fields'}), 400
         
         shared_with = User.query.filter_by(username=data['shareWith']).first()
@@ -236,19 +236,17 @@ def share_data():
             end_date = datetime.now()
             start_date = end_date - timedelta(days=365)
         
-        # Create shared expense record
+        # Create shared expense record (no data_type or categories)
         shared_expense = SharedExpense(
             shared_by_id=current_user.id,
             shared_with_id=shared_with.id,
-            data_type=data['dataType'],
-            categories=json.dumps(data.get('categories', [])) if data['dataType'] == 'summary' else None,
             start_date=start_date,
             end_date=end_date
         )
         
         db.session.add(shared_expense)
         db.session.commit()
-        return jsonify({'success': True, 'message': 'Data shared successfully'})
+        return jsonify({'success': True}), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({'success': False, 'message': str(e)}), 500
@@ -269,34 +267,20 @@ def get_shared_expenses():
         query = Expense.query.filter_by(user_id=record.shared_by_id)
         
         # Apply date filters based on the date range
-        if record.data_type == 'all':
-            if record.start_date and record.end_date:
-                query = query.filter(Expense.date >= record.start_date, Expense.date <= record.end_date)
-            elif record.start_date:
-                query = query.filter(Expense.date >= record.start_date)
-            elif record.end_date:
-                query = query.filter(Expense.date <= record.end_date)
-        else:  # summary type
-            if record.categories:
-                categories = json.loads(record.categories)
-                query = query.filter(Expense.category.in_(categories))
-            
-            if record.start_date and record.end_date:
-                query = query.filter(Expense.date >= record.start_date, Expense.date <= record.end_date)
-            elif record.start_date:
-                query = query.filter(Expense.date >= record.start_date)
-            elif record.end_date:
-                query = query.filter(Expense.date <= record.end_date)
-            
+        if record.start_date and record.end_date:
+            query = query.filter(Expense.date >= record.start_date, Expense.date <= record.end_date)
+        elif record.start_date:
+            query = query.filter(Expense.date >= record.start_date)
+        elif record.end_date:
+            query = query.filter(Expense.date <= record.end_date)
+        
         expenses = query.all()
         
-        # Format the data
+        # Format the data (no data_type or categories)
         shared_data = {
             'id': record.id,
             'shared_by': record.shared_by.username,
             'shared_at': record.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-            'data_type': record.data_type,
-            'categories': record.categories,
             'start_date': record.start_date.strftime('%Y-%m-%d') if record.start_date else None,
             'end_date': record.end_date.strftime('%Y-%m-%d') if record.end_date else None,
             'expenses': [{
@@ -330,8 +314,6 @@ def get_my_shared_expenses():
         result.append({
             'shared_with': record.shared_with.username,
             'shared_at': record.created_at.strftime('%Y-%m-%d %H:%M:%S'),
-            'data_type': record.data_type,
-            'categories': json.loads(record.categories) if record.categories else None,
             'start_date': record.start_date.strftime('%Y-%m-%d') if record.start_date else None,
             'end_date': record.end_date.strftime('%Y-%m-%d') if record.end_date else None
         })
