@@ -26,3 +26,17 @@ class Expense(db.Model):
 
     def __repr__(self):
         return f'<Expense {self.category}/{self.sub_category} - {self.amount} {self.currency}>'
+
+class SharedExpense(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    shared_by_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    shared_with_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    data_type = db.Column(db.String(20), nullable=False)  # 'all' or 'summary'
+    categories = db.Column(db.String(200), nullable=True)  # JSON string of selected categories
+    start_date = db.Column(db.DateTime, nullable=True)
+    end_date = db.Column(db.DateTime, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    shared_by = db.relationship('User', foreign_keys=[shared_by_id], backref='shared_expenses')
+    shared_with = db.relationship('User', foreign_keys=[shared_with_id], backref='received_expenses')

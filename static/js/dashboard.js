@@ -1,9 +1,9 @@
-// ✅ Final version of dashboard.js with locked categories, subcategories, and currencies
-
 let originalData = [];
 let currentFilter = "monthly";
 let currentCurrency = "USD";
 const budgetTarget = 2000;
+let currentView = "personal"; // 'personal' or 'shared'
+let currentSharedData = null;
 
 const allowedCategories = {
   Housing: ["Rent", "Mortgage", "Utilities", "Home Insurance", "Maintenance"],
@@ -232,3 +232,76 @@ function exportCharts(format) {
     pdf.save("dashboard.pdf");
   }
 }
+
+// Add this function to handle shared data
+function loadSharedData() {
+  fetch("/api/shared-expenses")
+    .then((response) => response.json())
+    .then((data) => {
+      const sharedDataList = document.getElementById("sharedDataList");
+      sharedDataList.innerHTML = "";
+
+      if (data.length === 0) {
+        sharedDataList.innerHTML =
+          '<p class="text-gray-500">No shared data available.</p>';
+        return;
+      }
+
+      data.forEach((sharedData) => {
+        const card = document.createElement("div");
+        card.className = "card p-4 bg-white rounded-lg shadow";
+        card.innerHTML = `
+          <h3 class="font-semibold mb-2">Shared by ${sharedData.shared_by}</h3>
+          <p class="text-sm text-gray-600 mb-2">Shared on ${
+            sharedData.shared_at
+          }</p>
+          <button class="view-shared-data-btn bg-blue-500 text-white px-3 py-1 rounded"
+                  data-expenses='${JSON.stringify(sharedData.expenses)}'>
+              View Data
+          </button>
+        `;
+        sharedDataList.appendChild(card);
+      });
+
+      // Add event listeners to view buttons
+      document.querySelectorAll(".view-shared-data-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          const expenses = JSON.parse(this.dataset.expenses);
+          currentView = "shared";
+          currentSharedData = expenses;
+          drawCharts(expenses);
+
+          // Show the switch button container
+          const switchContainer = document.getElementById(
+            "viewSwitchContainer"
+          );
+          switchContainer.style.display = "block";
+        });
+      });
+    })
+    .catch((error) => {
+      console.error("Error loading shared data:", error);
+    });
+}
+
+// Add event listener for the switch back button
+document.getElementById("switchBackBtn").addEventListener("click", function () {
+  currentView = "personal";
+  currentSharedData = null;
+  drawCharts(originalData);
+  this.parentElement.style.display = "none";
+});
+
+// Modify the initial data loading
+document.addEventListener("DOMContentLoaded", function () {
+  // Load personal data
+  fetch("/api/expenses")
+    .then((response) => response.json())
+    .then((data) => {
+      originalData = data;
+      drawCharts(originalData);
+    });
+
+  // Load shared data
+  loadSharedData();
+});

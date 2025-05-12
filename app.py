@@ -1,13 +1,15 @@
 from flask import Flask, render_template, url_for, request, jsonify, redirect, flash, session
 from config import Config
-from models import db, User, Expense
+from models import db, User, Expense, SharedExpense
 from forms import LoginForm, SignupForm
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from datetime import datetime
+from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 import io
 import csv
+import json
+from sqlalchemy import String
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -180,6 +182,124 @@ def api_expenses():
             'currency': exp.currency
         })
     return jsonify(result)
+
+@app.route('/api/search-users')
+@login_required
+def search_users():
+    search_term = request.args.get('term', '').strip()
+    
+    if len(search_term) < 2:
+        return jsonify({'users': []})
+    
+    users = User.query.filter(
+        User.username.ilike(f'%{search_term}%')
+    ).filter(User.id != current_user.id).all()
+    
+    return jsonify({
+        'users': [{
+            'username': user.username
+        } for user in users]
+    })
+
+@app.route('/api/share-data', methods=['POST'])
+@login_required
+def share_data():
+    try:
+        data = request.get_json()
+        
+        if not all(k in data for k in ['dataType', 'shareWith']):
+            return jsonify({'success': False, 'message': 'Missing required fields'}), 400
+        
+        shared_with = User.query.filter_by(username=data['shareWith']).first()
+        if not shared_with:
+            return jsonify({'success': False, 'message': 'User not found'}), 404
+        
+        shared_expense = SharedExpense(
+            shared_by_id=current_user.id,
+            shared_with_id=shared_with.id,
+            data_type=data['dataType'],
+            categories=json.dumps(data.get('categories', [])) if data['dataType'] == 'summary' else None,
+            start_date=datetime.strptime(data['startDate'], '%Y-%m-%d') if data.get('startDate') else None,
+            end_date=datetime.strptime(data['endDate'], '%Y-%m-%d') if data.get('endDate') else None
+        )
+        
+        db.session.add(shared_expense)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Data shared successfully'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/shared-expenses')
+@login_required
+def get_shared_expenses():
+    # Get expenses shared with current user
+    shared_records = SharedExpense.query.filter_by(shared_with_id=current_user.id).all()
+    
+    result = []
+    for record in shared_records:
+        # Get the original expenses based on sharing criteria
+        query = Expense.query.filter_by(user_id=record.shared_by_id)
+        
+        # Apply date filters if specified
+        if record.start_date:
+            query = query.filter(Expense.date >= record.start_date)
+        if record.end_date:
+            query = query.filter(Expense.date <= record.end_date)
+            
+        # Apply category filter if summary type
+        if record.data_type == 'summary' and record.categories:
+            categories = json.loads(record.categories)
+            query = query.filter(Expense.category.in_(categories))
+            
+        expenses = query.all()
+        
+        # Format the data
+        shared_data = {
+            'shared_by': record.shared_by.username,
+            'shared_at': record.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'data_type': record.data_type,
+            'expenses': [{
+                'date': exp.date.strftime('%Y-%m-%d'),
+                'category': exp.category,
+                'subCategory': exp.sub_category,
+                'amount': exp.amount,
+                'currency': exp.currency
+            } for exp in expenses]
+        }
+        result.append(shared_data)
+    
+    return jsonify(result)
+
+@app.route('/api/my-shared-expenses')
+@login_required
+def get_my_shared_expenses():
+    # Get expenses shared by current user
+    shared_records = SharedExpense.query.filter_by(shared_by_id=current_user.id).all()
+    
+    result = []
+    for record in shared_records:
+        result.append({
+            'shared_with': record.shared_with.username,
+            'shared_at': record.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'data_type': record.data_type,
+            'categories': json.loads(record.categories) if record.categories else None,
+            'start_date': record.start_date.strftime('%Y-%m-%d') if record.start_date else None,
+            'end_date': record.end_date.strftime('%Y-%m-%d') if record.end_date else None
+        })
+    
+    return jsonify(result)
+
+@app.route('/debug/users')
+@login_required
+def debug_users():
+    users = User.query.all()
+    return jsonify({
+        'users': [{
+            'id': user.id,
+            'username': user.username
+        } for user in users]
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
