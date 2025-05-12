@@ -276,6 +276,10 @@ function loadSharedData() {
             "viewSwitchContainer"
           );
           switchContainer.style.display = "block";
+
+          // Hide elements that should not be visible in shared view
+          document.getElementById("dailySpendContainer").style.display = "none";
+          document.getElementById("controlsContainer").style.display = "none";
         });
       });
     })
@@ -284,24 +288,76 @@ function loadSharedData() {
     });
 }
 
-// Add event listener for the switch back button
-document.getElementById("switchBackBtn").addEventListener("click", function () {
-  currentView = "personal";
-  currentSharedData = null;
-  drawCharts(originalData);
-  this.parentElement.style.display = "none";
-});
+// Add this function to check for shared data on page load
+function checkForSharedData() {
+  const urlParams = new URLSearchParams(window.location.search);
 
-// Modify the initial data loading
+  if (urlParams.get("view") === "shared") {
+    const sharedExpenses = localStorage.getItem("sharedExpenses");
+
+    if (sharedExpenses) {
+      const expenses = JSON.parse(sharedExpenses);
+      currentView = "shared";
+      currentSharedData = expenses;
+      drawCharts(expenses);
+
+      // Show the switch button container
+      const switchContainer = document.getElementById("viewSwitchContainer");
+      if (switchContainer) {
+        switchContainer.style.display = "block";
+      }
+
+      // Hide all elements that should not be visible in shared view
+      document.getElementById("dailySpendContainer").style.display = "none";
+      document.getElementById("controlsContainer").style.display = "none";
+      document.getElementById("exportPNG").style.display = "none";
+      document.getElementById("exportPDF").style.display = "none";
+      document.getElementById("currencySelector").style.display = "none";
+
+      // Hide all filter buttons
+      document.querySelectorAll(".filter-btn").forEach((btn) => {
+        btn.style.display = "none";
+      });
+
+      // Clear the localStorage after using it
+      localStorage.removeItem("sharedExpenses");
+    }
+  }
+}
+
+// Add this near the beginning of the file, after variable declarations
 document.addEventListener("DOMContentLoaded", function () {
   // Load personal data
   fetch("/api/expenses")
     .then((response) => response.json())
     .then((data) => {
       originalData = data;
-      drawCharts(originalData);
+      drawCharts(data);
     });
 
-  // Load shared data
-  loadSharedData();
+  // Check for shared data
+  checkForSharedData();
+
+  // Add event listener for back to personal button
+  document
+    .getElementById("backToPersonalBtn")
+    .addEventListener("click", function () {
+      currentView = "personal";
+      drawCharts(originalData);
+      document.getElementById("viewSwitchContainer").style.display = "none";
+      document.getElementById("dailySpendContainer").style.display = "block";
+      document.getElementById("controlsContainer").style.display = "flex";
+
+      // Show all elements again
+      document.getElementById("exportPNG").style.display = "inline-block";
+      document.getElementById("exportPDF").style.display = "inline-block";
+      document.getElementById("currencySelector").style.display = "block";
+
+      // Show all filter buttons
+      document.querySelectorAll(".filter-btn").forEach((btn) => {
+        btn.style.display = "inline-block";
+      });
+    });
 });
+// Load shared data for the sidebar
+loadSharedData();

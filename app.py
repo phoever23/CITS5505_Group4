@@ -214,13 +214,36 @@ def share_data():
         if not shared_with:
             return jsonify({'success': False, 'message': 'User not found'}), 404
         
+        # Handle date range
+        start_date = None
+        end_date = None
+        
+        if data.get('dateRange') == 'custom':
+            if data.get('startDate'):
+                start_date = datetime.strptime(data['startDate'], '%Y-%m-%d')
+            if data.get('endDate'):
+                end_date = datetime.strptime(data['endDate'], '%Y-%m-%d')
+        elif data.get('dateRange') == 'last_month':
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=30)
+        elif data.get('dateRange') == 'last_3months':
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=90)
+        elif data.get('dateRange') == 'last_6months':
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=180)
+        elif data.get('dateRange') == 'last_year':
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=365)
+        
+        # Create shared expense record
         shared_expense = SharedExpense(
             shared_by_id=current_user.id,
             shared_with_id=shared_with.id,
             data_type=data['dataType'],
             categories=json.dumps(data.get('categories', [])) if data['dataType'] == 'summary' else None,
-            start_date=datetime.strptime(data['startDate'], '%Y-%m-%d') if data.get('startDate') else None,
-            end_date=datetime.strptime(data['endDate'], '%Y-%m-%d') if data.get('endDate') else None
+            start_date=start_date,
+            end_date=end_date
         )
         
         db.session.add(shared_expense)
@@ -233,32 +256,49 @@ def share_data():
 @app.route('/api/shared-expenses')
 @login_required
 def get_shared_expenses():
-    # Get expenses shared with current user
-    shared_records = SharedExpense.query.filter_by(shared_with_id=current_user.id).all()
+    page = request.args.get('page', 1, type=int)
+    per_page = 3
+    
+    shared_records = SharedExpense.query.filter_by(shared_with_id=current_user.id)\
+        .order_by(SharedExpense.created_at.desc())\
+        .paginate(page=page, per_page=per_page, error_out=False)
     
     result = []
-    for record in shared_records:
+    for record in shared_records.items:
         # Get the original expenses based on sharing criteria
         query = Expense.query.filter_by(user_id=record.shared_by_id)
         
-        # Apply date filters if specified
-        if record.start_date:
-            query = query.filter(Expense.date >= record.start_date)
-        if record.end_date:
-            query = query.filter(Expense.date <= record.end_date)
+        # Apply date filters based on the date range
+        if record.data_type == 'all':
+            if record.start_date and record.end_date:
+                query = query.filter(Expense.date >= record.start_date, Expense.date <= record.end_date)
+            elif record.start_date:
+                query = query.filter(Expense.date >= record.start_date)
+            elif record.end_date:
+                query = query.filter(Expense.date <= record.end_date)
+        else:  # summary type
+            if record.categories:
+                categories = json.loads(record.categories)
+                query = query.filter(Expense.category.in_(categories))
             
-        # Apply category filter if summary type
-        if record.data_type == 'summary' and record.categories:
-            categories = json.loads(record.categories)
-            query = query.filter(Expense.category.in_(categories))
+            if record.start_date and record.end_date:
+                query = query.filter(Expense.date >= record.start_date, Expense.date <= record.end_date)
+            elif record.start_date:
+                query = query.filter(Expense.date >= record.start_date)
+            elif record.end_date:
+                query = query.filter(Expense.date <= record.end_date)
             
         expenses = query.all()
         
         # Format the data
         shared_data = {
+            'id': record.id,
             'shared_by': record.shared_by.username,
             'shared_at': record.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'data_type': record.data_type,
+            'categories': record.categories,
+            'start_date': record.start_date.strftime('%Y-%m-%d') if record.start_date else None,
+            'end_date': record.end_date.strftime('%Y-%m-%d') if record.end_date else None,
             'expenses': [{
                 'date': exp.date.strftime('%Y-%m-%d'),
                 'category': exp.category,
@@ -269,7 +309,15 @@ def get_shared_expenses():
         }
         result.append(shared_data)
     
-    return jsonify(result)
+    return jsonify({
+        'shared_data': result,
+        'pagination': {
+            'current_page': shared_records.page,
+            'total_pages': shared_records.pages,
+            'has_next': shared_records.has_next,
+            'has_prev': shared_records.has_prev
+        }
+    })
 
 @app.route('/api/my-shared-expenses')
 @login_required
