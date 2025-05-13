@@ -31,7 +31,8 @@
 
 /* Form Field Styling */
 .share-page .data-selection-form select,
-.share-page .data-selection-form input[type="text"] {
+.share-page .data-selection-form input[type="text"],
+.share-page .data-selection-form input[type="date"] {
     width: 100%;
     padding: 10px 12px;
     margin-bottom: 15px;
@@ -44,7 +45,8 @@
 }
 
 .share-page .data-selection-form select:focus,
-.share-page .data-selection-form input[type="text"]:focus {
+.share-page .data-selection-form input[type="text"]:focus,
+.share-page .data-selection-form input[type="date"]:focus {
     outline: none;
     border-color: #3498db;
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
@@ -66,10 +68,53 @@
     color: #555;
 }
 
+/* Date Range Inputs */
+.date-range-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* Search Results Styling */
+.search-results {
+    position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+    width: 100%;
+    z-index: 1000;
+    display: none;
+}
+
+.search-result-item {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+}
+
+.search-result-item:hover {
+    background-color: #f5f5f5;
+}
+
+/* Success and Error Messages */
+.success-message {
+    color: #2ecc71;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #eafaf1;
+}
+
+.error-message {
+    color: #e74c3c;
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #fdedec;
+}
+
 /* Button Styling */
-.share-page .share-btn {
-    margin-top: 20px;
-    display: inline-block;
+.share-page .cta-btn {
     background-color: #3498db;
     color: white;
     padding: 12px 25px;
@@ -83,7 +128,7 @@
     width: 100%;
 }
 
-.share-page .share-btn:hover {
+.share-page .cta-btn:hover {
     background-color: #2980b9;
     transform: translateY(-2px);
 }
@@ -111,4 +156,82 @@
     .share-options-card {
         padding: 20px;
     }
+
+    .date-range-inputs {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Add these styles to share.css */
+.shared-data-list {
+    margin-bottom: 20px;
+}
+
+.shared-data-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.shared-data-item:last-child {
+    border-bottom: none;
+}
+
+.shared-data-info {
+    flex-grow: 1;
+}
+
+.shared-data-details {
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 8px;
+}
+
+.shared-data-details p {
+    margin: 4px 0;
+}
+
+.shared-data-details .font-medium {
+    color: #2c3e50;
+}
+
+.shared-data-actions {
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.pagination button {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.pagination button:hover {
+    background: #f5f5f5;
+}
+
+.pagination button.active {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.pagination button:disabled {
+    background: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
 }

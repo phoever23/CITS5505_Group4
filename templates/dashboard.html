@@ -16,16 +16,25 @@
 {% block content %}
 <div class="dashboard-content-wrapper py-6">
   <div class="container">
-
     <h1 class="text-2xl font-bold mb-4">Budget Visualisation Dashboard</h1>
 
+    <!-- View Switch Container -->
+    <div id="viewSwitchContainer" class="mb-4 p-3 bg-blue-100 rounded" style="display: none;">
+      <div class="flex justify-between items-center">
+        <h2 class="font-semibold">Viewing Shared Data</h2>
+        <button id="backToPersonalBtn" class="cta-btn">
+          Back to Personal Data
+        </button>
+      </div>
+    </div>
+
     <!-- Average Daily Spend -->
-    <div class="mb-4 p-3 bg-yellow-100 rounded">
+    <div id="dailySpendContainer" class="mb-4 p-3 bg-yellow-100 rounded">
       <h2 class="font-semibold">Your Average Daily Spend: <span id="dailySpend">$0</span></h2>
     </div>
 
     <!-- Top Controls -->
-    <div class="flex flex-wrap items-center gap-4 mb-6">
+    <div id="controlsContainer" class="flex flex-wrap items-center gap-4 mb-6">
       <!-- Removed CSV File Input -->
 
       <!-- Date Filter Buttons -->
@@ -86,7 +95,7 @@
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
 <script>
-  // ✅ Auto-fetch data when page loads
+  // Auto-fetch data when page loads
   fetch('/api/expenses')
     .then(response => response.json())
     .then(data => {

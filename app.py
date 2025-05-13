@@ -1,13 +1,15 @@
 from flask import Flask, render_template, url_for, request, jsonify, redirect, flash, session
 from config import Config
-from models import db, User, Expense
+from models import db, User, Expense, SharedExpense
 from forms import LoginForm, SignupForm
 from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from datetime import datetime
+from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 import io
 import csv
+import json
+from sqlalchemy import String
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -180,6 +182,154 @@ def api_expenses():
             'currency': exp.currency
         })
     return jsonify(result)
+
+@app.route('/api/search-users')
+@login_required
+def search_users():
+    search_term = request.args.get('term', '').strip()
+    
+    if len(search_term) < 2:
+        return jsonify({'users': []})
+    
+    users = User.query.filter(
+        User.username.ilike(f'%{search_term}%')
+    ).filter(User.id != current_user.id).all()
+    
+    return jsonify({
+        'users': [{
+            'username': user.username
+        } for user in users]
+    })
+
+@app.route('/api/share-data', methods=['POST'])
+@login_required
+def share_data():
+    try:
+        data = request.get_json()
+        
+        if not all(k in data for k in ['shareWith']):
+            return jsonify({'success': False, 'message': 'Missing required fields'}), 400
+        
+        shared_with = User.query.filter_by(username=data['shareWith']).first()
+        if not shared_with:
+            return jsonify({'success': False, 'message': 'User not found'}), 404
+        
+        # Handle date range
+        start_date = None
+        end_date = None
+        
+        if data.get('dateRange') == 'custom':
+            if data.get('startDate'):
+                start_date = datetime.strptime(data['startDate'], '%Y-%m-%d')
+            if data.get('endDate'):
+                end_date = datetime.strptime(data['endDate'], '%Y-%m-%d')
+        elif data.get('dateRange') == 'last_month':
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=30)
+        elif data.get('dateRange') == 'last_3months':
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=90)
+        elif data.get('dateRange') == 'last_6months':
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=180)
+        elif data.get('dateRange') == 'last_year':
+            end_date = datetime.now()
+            start_date = end_date - timedelta(days=365)
+        
+        # Create shared expense record (no data_type or categories)
+        shared_expense = SharedExpense(
+            shared_by_id=current_user.id,
+            shared_with_id=shared_with.id,
+            start_date=start_date,
+            end_date=end_date
+        )
+        
+        db.session.add(shared_expense)
+        db.session.commit()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/shared-expenses')
+@login_required
+def get_shared_expenses():
+    page = request.args.get('page', 1, type=int)
+    per_page = 3
+    
+    shared_records = SharedExpense.query.filter_by(shared_with_id=current_user.id)\
+        .order_by(SharedExpense.created_at.desc())\
+        .paginate(page=page, per_page=per_page, error_out=False)
+    
+    result = []
+    for record in shared_records.items:
+        # Get the original expenses based on sharing criteria
+        query = Expense.query.filter_by(user_id=record.shared_by_id)
+        
+        # Apply date filters based on the date range
+        if record.start_date and record.end_date:
+            query = query.filter(Expense.date >= record.start_date, Expense.date <= record.end_date)
+        elif record.start_date:
+            query = query.filter(Expense.date >= record.start_date)
+        elif record.end_date:
+            query = query.filter(Expense.date <= record.end_date)
+        
+        expenses = query.all()
+        
+        # Format the data (no data_type or categories)
+        shared_data = {
+            'id': record.id,
+            'shared_by': record.shared_by.username,
+            'shared_at': record.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'start_date': record.start_date.strftime('%Y-%m-%d') if record.start_date else None,
+            'end_date': record.end_date.strftime('%Y-%m-%d') if record.end_date else None,
+            'expenses': [{
+                'date': exp.date.strftime('%Y-%m-%d'),
+                'category': exp.category,
+                'subCategory': exp.sub_category,
+                'amount': exp.amount,
+                'currency': exp.currency
+            } for exp in expenses]
+        }
+        result.append(shared_data)
+    
+    return jsonify({
+        'shared_data': result,
+        'pagination': {
+            'current_page': shared_records.page,
+            'total_pages': shared_records.pages,
+            'has_next': shared_records.has_next,
+            'has_prev': shared_records.has_prev
+        }
+    })
+
+@app.route('/api/my-shared-expenses')
+@login_required
+def get_my_shared_expenses():
+    # Get expenses shared by current user
+    shared_records = SharedExpense.query.filter_by(shared_by_id=current_user.id).all()
+    
+    result = []
+    for record in shared_records:
+        result.append({
+            'shared_with': record.shared_with.username,
+            'shared_at': record.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'start_date': record.start_date.strftime('%Y-%m-%d') if record.start_date else None,
+            'end_date': record.end_date.strftime('%Y-%m-%d') if record.end_date else None
+        })
+    
+    return jsonify(result)
+
+@app.route('/debug/users')
+@login_required
+def debug_users():
+    users = User.query.all()
+    return jsonify({
+        'users': [{
+            'id': user.id,
+            'username': user.username
+        } for user in users]
+    })
 
 if __name__ == '__main__':
     app.run(debug=True)
