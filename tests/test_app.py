@@ -1,6 +1,10 @@
 import unittest
 from app import app
 
+# Add the project root directory to sys.path
+# This allows the script to find the 'app' module when run directly
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 class FlaskAppTests(unittest.TestCase):
     def setUp(self):
         self.app = app.test_client()
