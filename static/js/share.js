@@ -140,8 +140,11 @@ function loadSharedData(page = 1) {
         document.getElementById("pagination").style.display = "none";
         return;
       }
-
+      months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
       data.shared_data.forEach((sharedData) => {
+        const timestamp = sharedData.shared_at.split(" ");
+        const [date, time] = timestamp;
+        const [year, month, day] = date.split("-");
         const div = document.createElement("div");
         div.className = "shared-data-item";
         div.innerHTML = `
@@ -150,7 +153,7 @@ function loadSharedData(page = 1) {
                           sharedData.shared_by
                         }</h3>
                         <p class="text-sm text-gray-600">Shared on ${
-                          sharedData.shared_at
+                          day + " " + months[month-1] + " " + year + ", " + time.slice(0, 5)
                         }</p>
                         <div class="shared-data-details mt-2">
                             <p class="text-sm">
