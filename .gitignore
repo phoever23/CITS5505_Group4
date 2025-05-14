@@ -12,3 +12,5 @@ app.db
 #Metadata
 .DS_Store
 templates/.DS_Store
+
+.env
