@@ -29,6 +29,20 @@
     margin-bottom: 10px;
 }
 
+.share-options-card>p {
+    margin-bottom: 15px;
+    color: #777;
+}
+
+#shareDataBtn {
+    margin-top: 20px;
+}
+
+#shareResult {
+    margin-top: 20px;
+    text-align: center;
+}
+
 /* Form Field Styling */
 .share-page .data-selection-form select,
 .share-page .data-selection-form input[type="text"],

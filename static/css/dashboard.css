@@ -122,8 +122,44 @@ body.dashboard-page input[type="file"]:focus {
     transform: translateY(-2px);
 }
 
-/* Button Styling */
-.filter-btn.cta-btn {
+/* --- Controls Container Layout --- */
+#controlsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto 1.5rem auto;
+}
+
+#controlsContainer>div {
+    display: flex;
+    align-items: center;
+}
+
+#controlsContainer>.flex {
+    flex: 1 1 0;
+}
+
+#controlsContainer>.flex.justify-center {
+    justify-content: center;
+}
+
+#controlsContainer>.flex.gap-2 {
+    justify-content: flex-start;
+}
+
+#controlsContainer>.flex:last-child {
+    justify-content: flex-end;
+}
+
+/* --- Button and Selector Consistency --- */
+.filter-btn.cta-btn,
+#currencySelector.cta-btn,
+#exportPNG.cta-btn,
+#exportPDF.cta-btn {
     background-color: #3498db;
     color: white;
     padding: 12px 25px;
@@ -133,54 +169,72 @@ body.dashboard-page input[type="file"]:focus {
     font-weight: 600;
     transition: all 0.3s ease;
     cursor: pointer;
-}
-
-.filter-btn.cta-btn:hover {
-    background-color: #2980b9;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    min-width: 120px;
+    margin: 0 4px;
 }
 
 #currencySelector.cta-btn {
-    padding: 12px 25px;
-    border-radius: 30px;
-    font-size: 16px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    min-width: 120px;
+    background-color: #fff;
+    color: #3498db;
+    border: 2px solid #3498db;
 }
 
 #currencySelector.cta-btn:focus {
     outline: none;
-    border-color: #3498db;
+    border-color: #2980b9;
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
 }
 
-#exportPNG.cta-btn,
-#exportPDF.cta-btn {
-    padding: 12px 25px;
-    border: none;
-    border-radius: 30px;
-    font-size: 16px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    color: white;
-}
-
-#exportPNG.cta-btn:hover,
-#exportPDF.cta-btn:hover {
-    transform: translateY(-2px);
+.filter-btn.cta-btn:hover {
+    background-color: #2980b9;
+    color: #fff;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 
-#exportPNG.cta-btn:hover {
+#exportPNG.cta-btn {
     background-color: #27ae60;
 }
 
-#exportPDF.cta-btn:hover {
+#exportPNG.cta-btn:hover {
+    background-color: #219150;
+}
+
+#exportPDF.cta-btn {
     background-color: #c0392b;
+}
+
+#exportPDF.cta-btn:hover {
+    background-color: #a93226;
+}
+
+/* Responsive Controls Layout */
+@media (max-width: 900px) {
+    #controlsContainer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    #controlsContainer>div {
+        justify-content: center !important;
+        margin-bottom: 0.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    #controlsContainer {
+        gap: 0.5rem;
+    }
+
+    .filter-btn.cta-btn,
+    #currencySelector.cta-btn,
+    #exportPNG.cta-btn,
+    #exportPDF.cta-btn {
+        padding: 10px 10px;
+        font-size: 14px;
+        min-width: 80px;
+    }
 }
 
 .dashboard-header-group {
