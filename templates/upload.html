@@ -46,11 +46,11 @@
         <p>Add your expenses one by one</p>
         <form id="manualEntryForm" class="entry-form">
           <div class="form-group">
-            <label for="entryDate">Date<span style="color: red;">*</span></label>
+            <label for="entryDate">Date<span class="form-required-star">*</span></label>
             <input type="date" id="entryDate" required />
           </div>
           <div class="form-group">
-            <label for="entryCategory">Category<span style="color: red;">*</span></label>
+            <label for="entryCategory">Category<span class="form-required-star">*</span></label>
             <select id="entryCategory" required>
               <option value="">Select Category</option>
               <option value="Housing">Housing</option>
@@ -61,18 +61,18 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="entrySubcategory">Sub-category<span style="color: red;">*</span></label>
+            <label for="entrySubcategory">Sub-category<span class="form-required-star">*</span></label>
             <select id="entrySubcategory" required>
               <option value="">Select Sub-category</option>
               <!-- Subcategories will be populated based on category selection -->
             </select>
           </div>
           <div class="form-group">
-            <label for="entryAmount">Amount<span style="color: red;">*</span></label>
+            <label for="entryAmount">Amount<span class="form-required-star">*</span></label>
             <input type="number" id="entryAmount" step="0.01" min="0" required />
           </div>
           <div class="form-group">
-            <label for="entryCurrency">Currency<span style="color: red;">*</span></label>
+            <label for="entryCurrency">Currency<span class="form-required-star">*</span></label>
             <select id="entryCurrency" required>
               <option value="USD">USD ($)</option>
               <option value="EUR">EUR (€)</option>

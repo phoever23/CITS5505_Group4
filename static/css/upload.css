@@ -105,6 +105,11 @@ body.upload-page h1 {
     text-align: left;
 }
 
+.form-required-star {
+    color: red;
+    margin-left: 2px;
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .upload-options {
