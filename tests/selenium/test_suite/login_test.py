@@ -35,7 +35,7 @@ class TestLogin(unittest.TestCase):
         login_page.click_login()
         time.sleep(5)
 
-        # Assert the conditionsq
+        # Assert the conditions
         url = self.driver.current_url
         self.assertTrue(url.endswith('/dashboard'))
         self.assertTrue(dashboard_page.get_banner().endswith('test'))
