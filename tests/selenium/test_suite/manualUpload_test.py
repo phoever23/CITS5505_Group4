@@ -7,6 +7,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from pages.login_page import LoginPage
 from pages.dashboard_page import DashboardPage
 from pages.upload_page import UploadPage
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 class TestLogin(unittest.TestCase):
@@ -39,7 +41,13 @@ class TestLogin(unittest.TestCase):
 
         dashboard_page.click_upload()
         time.sleep(3)
-        upload_page.enter_date("12/05/2025")
+        date_input = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable((By.ID, "entryDate"))
+        )
+        self.driver.execute_script("""
+            arguments[0].value = arguments[1];
+            arguments[0].dispatchEvent(new Event('change'));
+        """, date_input, "2024-05-12")
         time.sleep(3)
         upload_page.enter_category()
         time.sleep(3)
