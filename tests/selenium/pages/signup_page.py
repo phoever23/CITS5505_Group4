@@ -16,6 +16,9 @@ class SignupPage:
     
     def enter_password(self, password):
         self.driver.find_element(*self.password_textbox).send_keys(password)
+    
+    def confirm_password(self, password):
+        self.driver.find_element(*self.confirm_textbox).send_keys(password)
 
     def click_signup(self):
         self.driver.find_element(*self.signup_button).click()
