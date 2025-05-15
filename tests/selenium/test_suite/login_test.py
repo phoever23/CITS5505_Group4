@@ -1,4 +1,4 @@
-import pytest
+import unittest
 import time
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -8,26 +8,38 @@ from pages.login_page import LoginPage
 from pages.dashboard_page import DashboardPage
 
 
-@pytest.fixture()
-def driver():
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-    driver.implicitly_wait(10)
-    yield driver
-    driver.close()
-    driver.quit()
+class TestLogin(unittest.TestCase):
+    def setUp(self):
+        # Setup WebDriver
+        self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+        self.driver.implicitly_wait(10)
 
-def test_login(driver):
-    dashboard_page = DashboardPage(driver)
-    login_page = LoginPage(driver)
-    login_page.open_page("http://127.0.0.1:5000/login")
-    time.sleep(5)
-    login_page.enter_username("niranjan")
-    time.sleep(3)
-    login_page.enter_password("Niranjan9")
-    time.sleep(3)
-    login_page.click_login()
-    time.sleep(5)
-    url = driver.current_url
-    assert(url.endswith('/dashboard') and dashboard_page.get_banner().endswith('niranjan'))
+    def tearDown(self):
+        # Cleanup WebDriver
+        self.driver.quit()
+
+    def test_login(self):
+        # Create instances of page objects
+        dashboard_page = DashboardPage(self.driver)
+        login_page = LoginPage(self.driver)
+
+        # Open login page
+        login_page.open_page("http://127.0.0.1:5000/login")
+        time.sleep(5)
+
+        # Perform login actions
+        login_page.enter_username("test")
+        time.sleep(3)
+        login_page.enter_password("qwerty")
+        time.sleep(3)
+        login_page.click_login()
+        time.sleep(5)
+
+        # Assert the conditionsq
+        url = self.driver.current_url
+        self.assertTrue(url.endswith('/dashboard'))
+        self.assertTrue(dashboard_page.get_banner().endswith('test'))
 
 
+if __name__ == "__main__":
+    unittest.main()
