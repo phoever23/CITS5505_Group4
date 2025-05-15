@@ -22,3 +22,5 @@ class SignupPage:
 
     def click_signup(self):
         self.driver.find_element(*self.signup_button).click()
+
+    

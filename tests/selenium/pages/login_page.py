@@ -6,6 +6,7 @@ class LoginPage:
         self.username_textbox=(By.ID, "username")
         self.password_textbox=(By.ID, "password")
         self.login_button=(By.ID, "submit")
+        self.success_alert=(By.XPATH, "//div[@role='alert']")
 
     def open_page(self, url):
         self.driver.get(url)
@@ -18,3 +19,6 @@ class LoginPage:
     
     def click_login(self):
         self.driver.find_element(*self.login_button).click()
+    
+    def get_alert(self):
+        return self.driver.find_element(*self.success_alert).text
