@@ -39,6 +39,8 @@ The main features include:
 | 24297797 | Gayathri Kasunthika Kanakaratne | GayaKasun2401   | Dashboard view, unit tests                                              |
 | 24345651 | Niranjan Vasudevan              | niranjan-v2     | Upload view, selenium tests                                             |
 
+Note: Commit `5477df1` on May 6, 2025, which appears under Ming’s name, was actually authored by Gayathri. Due to time constraints, Gayathri was unable to push the commit to GitHub herself, so Ming pushed it on her behalf. The work in this commit should be credited to Gayathri.
+
 ## Launch the Application
 
 Follow these steps to set up and run the application:
@@ -110,8 +112,6 @@ To run the unit tests:
    ```
 
 This will execute 13 unit tests covering key components of the application.
-
----
 
 ### Selenium Tests
 
