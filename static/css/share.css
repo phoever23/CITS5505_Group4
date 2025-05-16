@@ -109,6 +109,9 @@
     padding: 10px;
     border-radius: 4px;
     background-color: #eafaf1;
+    margin-top: 12px;
+    margin-left: 10px;
+    text-align: center;
 }
 
 .error-message {
@@ -116,6 +119,9 @@
     padding: 10px;
     border-radius: 4px;
     background-color: #fdedec;
+    margin-top: 12px;
+    margin-left: 10px;
+    text-align: center;
 }
 
 /* Button Styling */
