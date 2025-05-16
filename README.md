@@ -78,7 +78,15 @@ Follow these steps to set up and run the application:
    pip install -r requirements.txt
    ```
 
-5. **Run the Application**
+5. **Apply Database Migrations**
+
+   After installing the dependencies, apply the latest database schema with
+
+   ```bash
+   flask db upgrade
+   ```
+
+6. **Run the Application**
 
    ```bash
    python app.py
