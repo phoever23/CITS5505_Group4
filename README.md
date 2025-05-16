@@ -4,6 +4,18 @@
 ## Project Description
 
 An budget application that can track expense (user upload) and put them into different categories, create dashboard or other charts to demonstrate the historical data, and predict future income/expense.
+The main features include:
+
+1. Upload and record expenses: Users can manually input or upload spending records (e.g. CSV files).
+
+2. Categorize management: The system will categorize the income and expenditure by categories, such as food and beverage, transportation, housing, salary, and so on.
+
+3. Data Visualization: Various types of charts are displayed through the dashboard, such as income and expenditure trend charts, category percentage charts, etc.
+
+4. Historical Analysis and Reporting: Generate monthly expenditure statistics, category comparison and high spending list.
+
+5. Future prediction: Predict future income and expenditure trends based on historical data, reminding users to rationalize their budgets
+
 
 ## Development Environment Setup
 

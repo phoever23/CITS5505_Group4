@@ -47,6 +47,8 @@ function drawCharts(data) {
   const rates = { USD: 1, EUR: 0.9, INR: 83, AUD: 1.5, GBP: 0.8, CAD: 1.3 };
   const convert = (amt, cur) => (amt / rates[cur]) * rates[currentCurrency];
 
+  const convertedBudgetTarget = convert(budgetTarget, "USD"); // Assuming budgetTarget is in USD
+
   const byPeriod = {},
     byCategory = {},
     bySubCategory = {};
@@ -111,7 +113,7 @@ function drawCharts(data) {
         },
         {
           label: "Budget Target",
-          data: Array(periods.length + 3).fill(budgetTarget),
+          data: Array(periods.length + 3).fill(convertedBudgetTarget),
           borderColor: "green",
           borderDash: [10, 5],
           fill: false,
