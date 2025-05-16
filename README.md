@@ -37,7 +37,7 @@ The main features include:
 | 24177876 | Ming Gao                        | phoever23       | Share data view, database setup, user authentication, github management |
 | 24350939 | Jianing Wang                    | zhazha-1004     | Homepage design, project description                                    |
 | 24297797 | Gayathri Kasunthika Kanakaratne | GayaKasun2401   | Dashboard view, unit tests                                              |
-| 24345651 | Niranjan Vasudevan              | niranjan-v2     | Upload view, selenium tests                                             |
+| 24345651 | Niranjan Vasudevan              | niranjan-v2     | Upload view, selenium tests, bugs and issues                            |
 
 Note: Commit `5477df1` on May 6, 2025, which appears under Ming’s name, was actually authored by Gayathri. Due to time constraints, Gayathri was unable to push the commit to GitHub herself, so Ming pushed it on her behalf. The work in this commit should be credited to Gayathri.
 
